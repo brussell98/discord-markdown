@@ -48,6 +48,7 @@ const rules = {
 		}
 	}),
 	url: Object.assign(markdown.defaultRules.url, {
+//		match: markdown.inlineRegex(/^(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/),
 		parse: capture => {
 			return {
 				content: [{
@@ -91,11 +92,32 @@ const rules = {
 	}),
 };
 
+const rulesEmbed = Object.assign(rules, {
+	link: Object.assign(markdown.defaultRules.link, {
+		match: markdown.inlineRegex(/^\[(https?:\/\/[^\s<]+[^<.,:;"')\]\s])\]\(([^\s\)]+)\)/),
+		parse: capture => {
+			return {
+				content: [{
+					type: 'text',
+					content: capture[2]
+				}],
+				target: capture[1]
+			}
+		},
+		html: (node, output, state) => {
+			return htmlTag('a', output(node.content, state), { href: markdown.sanitizeUrl(node.target) });
+		}
+	}),
+});
+
 const parser = markdown.parserFor(rules);
 const htmlOutput = markdown.htmlFor(markdown.ruleOutput(rules, 'html'));
+const parserEmbed = markdown.parserFor(rulesEmbed);
+const htmlOutputEmbed = markdown.htmlFor(markdown.ruleOutput(rulesEmbed, 'html'));
 
 module.exports = {
 	parser: source => parser(source, { inline: true }),
 	htmlOutput,
-	toHTML: source => htmlOutput(parser(source, { inline: true }))
+	toHTML: source => htmlOutput(parser(source, { inline: true })),
+	toHTMLEmbed: source => htmlOutputEmbed(parserEmbed(source, { inline: true })),
 };

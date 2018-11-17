@@ -74,6 +74,13 @@ test('Multiline', () => {
 test('don\'t drop arms', () => {
 	expect(markdown.toHTML('¯\\_(ツ)_/¯'))
 		.toBe('¯\\_(ツ)_/¯');
-		expect(markdown.toHTML('¯\\_(ツ)_/¯ *test* ¯\\_(ツ)_/¯'))
-			.toBe('¯\\_(ツ)_/¯ <em>test</em> ¯\\_(ツ)_/¯');
+	expect(markdown.toHTML('¯\\_(ツ)_/¯ *test* ¯\\_(ツ)_/¯'))
+		.toBe('¯\\_(ツ)_/¯ <em>test</em> ¯\\_(ツ)_/¯');
+});
+
+test('only embeds have [link](label)', () => {
+//	expect(markdown.toHTML('[http://example.com](link)'))
+//		.toBe('(<a href="http://example.com)[link">http://example.com)[link</a>]');
+	expect(markdown.toHTMLEmbed('[http://example.com](link)'))
+		.toBe('<a href="http://example.com">link</a>');
 });
