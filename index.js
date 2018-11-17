@@ -48,7 +48,6 @@ const rules = {
 		}
 	}),
 	url: Object.assign(markdown.defaultRules.url, {
-//		match: markdown.inlineRegex(/^(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/),
 		parse: capture => {
 			return {
 				content: [{
@@ -80,9 +79,6 @@ const rules = {
 				content: parse(capture[0].replace(/^¯\\_\(ツ\)_\/¯/, '¯\\\\\\_(ツ)_/¯'), state)
 			};
 		},
-		react: function(node, output, state) {
-			return output(node.content, state);
-		},
 		html: function(node, output, state) {
 			return output(node.content, state);
 		},
@@ -91,6 +87,77 @@ const rules = {
 		match: markdown.anyScopeRegex(/^\n/),
 	}),
 };
+
+const discordCallbackDefaults = {
+	user: node => {
+		return '@' + node.id;
+	},
+	channel: node => {
+		return '#' + node.id;
+	},
+	role: node => {
+		return '&' + node.id;
+	},
+	emoji: node => {
+		return ':' + markdown.sanitizeText(node.name) + ':';
+	}
+};
+
+let discordCallback = discordCallbackDefaults;
+
+const rulesDiscord = {
+	discordUser: {
+		order: markdown.defaultRules.strong.order,
+		match: source => /^<@!?([0-9]*)>/.exec(source),
+		parse: function(capture, parse, state) {
+			return {
+				id: capture[1]
+			};
+		},
+		html: function(node, output, state) {
+			return discordCallback.user(node);
+		}
+	},
+	discordChannel: {
+		order: markdown.defaultRules.strong.order,
+		match: source => /^<#?([0-9]*)>/.exec(source),
+		parse: function(capture, parse, state) {
+			return {
+				id: capture[1]
+			};
+		},
+		html: function(node, output, state) {
+			return discordCallback.channel(node);
+		}
+	},
+	discordRole: {
+		order: markdown.defaultRules.strong.order,
+		match: source => /^<@&([0-9]*)>/.exec(source),
+		parse: function(capture, parse, state) {
+			return {
+				id: capture[1]
+			};
+		},
+		html: function(node, output, state) {
+			return discordCallback.role(node);
+		}
+	},
+	discordEmoji: {
+		order: markdown.defaultRules.strong.order,
+		match: source => /^<(a?):(\w+):([0-9]*)>/.exec(source),
+		parse: function(capture, parse, state) {
+			return {
+				animated: capture[1] === "a",
+				name: capture[2],
+				id: capture[3],
+			};
+		},
+		html: function(node, output, state) {
+			return discordCallback.emoji(node);
+		}
+	},
+};
+Object.assign(rules, rulesDiscord);
 
 const rulesEmbed = Object.assign({}, rules, {
 	link: Object.assign(markdown.defaultRules.link, {
@@ -112,20 +179,30 @@ const rulesEmbed = Object.assign({}, rules, {
 
 const parser = markdown.parserFor(rules);
 const htmlOutput = markdown.htmlFor(markdown.ruleOutput(rules, 'html'));
+const parserDiscord = markdown.parserFor(rulesDiscord);
+const htmlOutputDiscord = markdown.htmlFor(markdown.ruleOutput(rulesDiscord, 'html'));
 const parserEmbed = markdown.parserFor(rulesEmbed);
 const htmlOutputEmbed = markdown.htmlFor(markdown.ruleOutput(rulesEmbed, 'html'));
 
 function toHTML(source, options) {
 	options = Object.assign({
 		embed: false,
+		discordOnly: false,
+		discordCallback: {},
 	}, options || {});
 
 	let _parser = parser;
 	let _htmlOutput = htmlOutput;
-	if (options.embed) {
+	if (options.discordOnly) {
+		_parser = parserDiscord;
+		_htmlOutput = htmlOutputDiscord;
+	} else if (options.embed) {
 		_parser = parserEmbed;
 		_htmlOutput = htmlOutputEmbed;
 	}
+
+	discordCallback = Object.assign({}, discordCallbackDefaults, options.discordCallback);
+
 	return _htmlOutput(_parser(source, { inline: true }));
 }
 module.exports = {

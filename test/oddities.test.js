@@ -17,7 +17,7 @@ test('Triple *s', () => {
 
 test('Inline code with ` inside', () => {
 	expect(markdown.toHTML('``function test() { return "`" }``'))
-		.toBe('<code>function test() { return "`" }</code>');
+		.toBe('<code>function test() { return &quot;`&quot; }</code>');
 });
 
 test('Code blocks aren\'t parsed', () => {
