@@ -173,21 +173,7 @@ const rulesDiscordOnly = Object.assign({}, rulesDiscord, {
 
 
 const rulesEmbed = Object.assign({}, rules, {
-	link: Object.assign(markdown.defaultRules.link, {
-		match: markdown.inlineRegex(/^\[(https?:\/\/[^\s<]+[^<.,:;"')\]\s])\]\(([^\s\)]+)\)/),
-		parse: capture => {
-			return {
-				content: [{
-					type: 'text',
-					content: capture[2]
-				}],
-				target: capture[1]
-			}
-		},
-		html: (node, output, state) => {
-			return htmlTag('a', output(node.content, state), { href: markdown.sanitizeUrl(node.target) });
-		}
-	}),
+	link: markdown.defaultRules.link
 });
 
 const parser = markdown.parserFor(rules);
