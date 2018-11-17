@@ -114,7 +114,7 @@ const rulesDiscord = {
 		match: source => /^<@!?([0-9]*)>/.exec(source),
 		parse: function(capture, parse, state) {
 			return {
-				id: parseInt(capture[1])
+				id: capture[1]
 			};
 		},
 		html: function(node, output, state) {
@@ -126,7 +126,7 @@ const rulesDiscord = {
 		match: source => /^<#?([0-9]*)>/.exec(source),
 		parse: function(capture, parse, state) {
 			return {
-				id: parseInt(capture[1], 10)
+				id: capture[1]
 			};
 		},
 		html: function(node, output, state) {
@@ -138,7 +138,7 @@ const rulesDiscord = {
 		match: source => /^<@&([0-9]*)>/.exec(source),
 		parse: function(capture, parse, state) {
 			return {
-				id: parseInt(capture[1], 10)
+				id: capture[1]
 			};
 		},
 		html: function(node, output, state) {
@@ -152,7 +152,7 @@ const rulesDiscord = {
 			return {
 				animated: capture[1] === "a",
 				name: capture[2],
-				id: parseInt(capture[3], 10),
+				id: capture[3],
 			};
 		},
 		html: function(node, output, state) {
