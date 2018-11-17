@@ -69,3 +69,11 @@ test('Multiline', () => {
 	expect(markdown.toHTML('some *awesome* text\nthat **spreads** lines'))
 		.toBe('some <em>awesome</em> text<br>that <strong>spreads</strong> lines');
 });
+
+// apparently discord special-cased this exact thing, so that in this character sequence the \ doesn't escape
+test('don\'t drop arms', () => {
+	expect(markdown.toHTML('¯\\_(ツ)_/¯'))
+		.toBe('¯\\_(ツ)_/¯');
+		expect(markdown.toHTML('¯\\_(ツ)_/¯ *test* ¯\\_(ツ)_/¯'))
+			.toBe('¯\\_(ツ)_/¯ <em>test</em> ¯\\_(ツ)_/¯');
+});

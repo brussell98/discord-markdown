@@ -71,6 +71,21 @@ const rules = {
 	text: Object.assign(markdown.defaultRules.text, {
 		match: source => /^[\s\S]+?(?=[^0-9A-Za-z\s\u00c0-\uffff-]|\n\n|\n|\w+:\S|$)/.exec(source)
 	}),
+	specialCaseArms: {
+		order: markdown.defaultRules.escape.order - 0.5,
+		match: source => /^¯\\_\(ツ\)_\/¯/.exec(source),
+		parse: function(capture, parse, state) {
+			return {
+				content: parse(capture[0].replace(/^¯\\_\(ツ\)_\/¯/, '¯\\\\\\_(ツ)_/¯'), state)
+			};
+		},
+		react: function(node, output, state) {
+			return output(node.content, state);
+		},
+		html: function(node, output, state) {
+			return output(node.content, state);
+		},
+	},
 	br: Object.assign(markdown.defaultRules.br, {
 		match: markdown.anyScopeRegex(/^\n/),
 	}),
