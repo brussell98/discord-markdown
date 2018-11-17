@@ -79,8 +79,8 @@ test('don\'t drop arms', () => {
 });
 
 test('only embeds have [link](label)', () => {
-//	expect(markdown.toHTML('[http://example.com](link)'))
-//		.toBe('(<a href="http://example.com)[link">http://example.com)[link</a>]');
-	expect(markdown.toHTMLEmbed('[http://example.com](link)'))
+	expect(markdown.toHTML('[http://example.com](link)'))
+		.toBe('[<a href=\"http://example.com](link\">http://example.com](link</a>)');
+	expect(markdown.toHTML('[http://example.com](link)', { embed: true }))
 		.toBe('<a href="http://example.com">link</a>');
 });

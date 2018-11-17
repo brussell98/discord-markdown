@@ -92,7 +92,7 @@ const rules = {
 	}),
 };
 
-const rulesEmbed = Object.assign(rules, {
+const rulesEmbed = Object.assign({}, rules, {
 	link: Object.assign(markdown.defaultRules.link, {
 		match: markdown.inlineRegex(/^\[(https?:\/\/[^\s<]+[^<.,:;"')\]\s])\]\(([^\s\)]+)\)/),
 		parse: capture => {
@@ -115,9 +115,21 @@ const htmlOutput = markdown.htmlFor(markdown.ruleOutput(rules, 'html'));
 const parserEmbed = markdown.parserFor(rulesEmbed);
 const htmlOutputEmbed = markdown.htmlFor(markdown.ruleOutput(rulesEmbed, 'html'));
 
+function toHTML(source, options) {
+	options = Object.assign({
+		embed: false,
+	}, options || {});
+
+	let _parser = parser;
+	let _htmlOutput = htmlOutput;
+	if (options.embed) {
+		_parser = parserEmbed;
+		_htmlOutput = htmlOutputEmbed;
+	}
+	return _htmlOutput(_parser(source, { inline: true }));
+}
 module.exports = {
 	parser: source => parser(source, { inline: true }),
 	htmlOutput,
-	toHTML: source => htmlOutput(parser(source, { inline: true })),
-	toHTMLEmbed: source => htmlOutputEmbed(parserEmbed(source, { inline: true })),
+	toHTML,
 };
