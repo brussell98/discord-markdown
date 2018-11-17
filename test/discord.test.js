@@ -51,3 +51,8 @@ test('custom emoji parsing', () => {
     }}
   })).toBe('heh ++:1234:++');
 });
+
+test('don\'t parse stuff in code blocks', () => {
+  expect(markdown.toHTML('`<@1234>`'))
+    .toBe('<code>&lt;@1234&gt;</code>');
+});
