@@ -4,7 +4,7 @@
 	"description": "A markdown parser configured with Discord's rules",
 	"main": "index.js",
 	"repository": "https://github.com/brussell98/discord-markdown.git",
-	"author": "Brussell",
+	"author": "Brussell, Sorunome",
 	"license": "MIT",
 	"private": false,
 	"scripts": {
