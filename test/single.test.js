@@ -10,6 +10,11 @@ test('Converts _text_ to <em>text</em>', () => {
 		.toBe('This is a <em>test</em> with <em>some italicized</em> text in it');
 });
 
+test('Converts _ text_ to <em> text </em>', () => {
+	expect(markdown.toHTML('This is a _ test_ with _ italic _ text in it'))
+		.toBe('This is a <em> test</em> with <em> italic </em> text in it');
+});
+
 test('Converts __text__ to <u>text</u>', () => {
 	expect(markdown.toHTML('This is a __test__ with __some underlined__ text in it'))
 		.toBe('This is a <u>test</u> with <u>some underlined</u> text in it');
@@ -30,12 +35,22 @@ test('Converts ~~text~~ to <del>text</del>', () => {
 		.toBe('<del>this</del>that');
 });
 
+test('Converts ~~ text ~~ to <del>', () => {
+	expect(markdown.toHTML('~~ text ~~ stuffs'))
+		.toBe('<del> text </del> stuffs');
+});
+
 test('Converts links to <a> links', () => {
 	expect(markdown.toHTML('https://brussell.me'))
 		.toBe('<a href="https://brussell.me">https://brussell.me</a>');
 
 	expect(markdown.toHTML('<https://brussell.me>'))
 		.toBe('<a href="https://brussell.me">https://brussell.me</a>');
+});
+
+test('Fence normal codeblocks', () => {
+	expect(markdown.toHTML('text\n```\ncode\nblock\n```\nmore text'))
+	.toBe('text<br><pre><code class="hljs">code\nblock</code></pre>more text');
 });
 
 test('Fenced code blocks with hljs', () => {
@@ -46,4 +61,11 @@ test('Fenced code blocks with hljs', () => {
 test('Escaped marks', () => {
 	expect(markdown.toHTML('Code: \\`1 + 1` = 2`'))
 		.toBe('Code: `1 + 1<code>= 2</code>');
+});
+
+test('Multiline', () => {
+	expect(markdown.toHTML('multi\nline'))
+		.toBe('multi<br>line');
+	expect(markdown.toHTML('some *awesome* text\nthat **spreads** lines'))
+		.toBe('some <em>awesome</em> text<br>that <strong>spreads</strong> lines');
 });

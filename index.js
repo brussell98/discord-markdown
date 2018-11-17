@@ -64,11 +64,16 @@ const rules = {
 	em: markdown.defaultRules.em,
 	strong: markdown.defaultRules.strong,
 	u: markdown.defaultRules.u,
-	del: markdown.defaultRules.del,
+	del: Object.assign(markdown.defaultRules.del, {
+		match: markdown.inlineRegex(/^~~(\s*?(?:\\[\s\S]|~(?!~)|[^\s\\~]|\s+(?!~~))+?\s*?)~~/),
+	}),
 	inlineCode: markdown.defaultRules.inlineCode,
 	text: Object.assign(markdown.defaultRules.text, {
-		match: source => /^[\s\S]+?(?=[^0-9A-Za-z\s\u00c0-\uffff-]|\n\n| {2,}\n|\w+:\S|$)/.exec(source)
-	})
+		match: source => /^[\s\S]+?(?=[^0-9A-Za-z\s\u00c0-\uffff-]|\n\n|\n|\w+:\S|$)/.exec(source)
+	}),
+	br: Object.assign(markdown.defaultRules.br, {
+		match: markdown.anyScopeRegex(/^\n/),
+	}),
 };
 
 const parser = markdown.parserFor(rules);
