@@ -29,3 +29,8 @@ test('multiple new lines', () => {
 	expect(markdown.toHTML('some\n\ntext'))
 		.toBe('some<br><br>text');
 });
+
+test('no undserscore italic in one word', () => {
+	expect(markdown.toHTML('test_ing_stuff'))
+		.toBe('test_ing_stuff');
+});
