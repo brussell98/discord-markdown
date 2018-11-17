@@ -20,7 +20,7 @@ function htmlTag(tagName, content, attributes, isClosed) {
 }
 
 const rules = {
-	codeBlock: Object.assign(markdown.defaultRules.codeBlock, {
+	codeBlock: Object.assign({}, markdown.defaultRules.codeBlock, {
 		html: node => {
 			if (node.lang && highlight.getLanguage(node.lang))
 				var code = highlight.highlight(node.lang, node.content);
@@ -28,12 +28,12 @@ const rules = {
 			return `<pre><code class="hljs${code ? ' ' + code.language : ''}">${code ? code.value : node.content}</code></pre>`
 		}
 	}),
-	fence: Object.assign(markdown.defaultRules.fence, {
+	fence: Object.assign({}, markdown.defaultRules.fence, {
 		match: markdown.inlineRegex(/^ *(`{3,}) *(\S+)? *\n([\s\S]+?)\s*\1 *(?:\n *)*/)
 	}),
 	newline: markdown.defaultRules.newline,
 	escape: markdown.defaultRules.escape,
-	autolink: Object.assign(markdown.defaultRules.autolink, {
+	autolink: Object.assign({}, markdown.defaultRules.autolink, {
 		parse: capture => {
 			return {
 				content: [{
@@ -47,7 +47,7 @@ const rules = {
 			return htmlTag('a', output(node.content, state), { href: markdown.sanitizeUrl(node.target) });
 		}
 	}),
-	url: Object.assign(markdown.defaultRules.url, {
+	url: Object.assign({}, markdown.defaultRules.url, {
 		parse: capture => {
 			return {
 				content: [{
@@ -64,12 +64,15 @@ const rules = {
 	em: markdown.defaultRules.em,
 	strong: markdown.defaultRules.strong,
 	u: markdown.defaultRules.u,
-	del: Object.assign(markdown.defaultRules.del, {
+	del: Object.assign({}, markdown.defaultRules.del, {
 		match: markdown.inlineRegex(/^~~(\s*?(?:\\[\s\S]|~(?!~)|[^\s\\~]|\s+(?!~~))+?\s*?)~~/),
 	}),
 	inlineCode: markdown.defaultRules.inlineCode,
-	text: Object.assign(markdown.defaultRules.text, {
-		match: source => /^[\s\S]+?(?=[^0-9A-Za-z\s\u00c0-\uffff-]|\n\n|\n|\w+:\S|$)/.exec(source)
+	text: Object.assign({}, markdown.defaultRules.text, {
+		match: source => /^[\s\S]+?(?=[^0-9A-Za-z\s\u00c0-\uffff-]|\n\n|\n|\w+:\S|$)/.exec(source),
+		html: function(node, output, state) {
+			return markdown.sanitizeText(node.content);
+		}
 	}),
 	specialCaseArms: {
 		order: markdown.defaultRules.escape.order - 0.5,
@@ -83,7 +86,7 @@ const rules = {
 			return output(node.content, state);
 		},
 	},
-	br: Object.assign(markdown.defaultRules.br, {
+	br: Object.assign({}, markdown.defaultRules.br, {
 		match: markdown.anyScopeRegex(/^\n/),
 	}),
 };
@@ -159,6 +162,16 @@ const rulesDiscord = {
 };
 Object.assign(rules, rulesDiscord);
 
+const rulesDiscordOnly = Object.assign({}, rulesDiscord, {
+	text: Object.assign({}, markdown.defaultRules.text, {
+		match: source => /^[\s\S]+?(?=[^0-9A-Za-z\s\u00c0-\uffff-]|\n\n|\n|\w+:\S|$)/.exec(source),
+		html: function(node, output, state) {
+			return node.content;
+		}
+	}),
+});
+
+
 const rulesEmbed = Object.assign({}, rules, {
 	link: Object.assign(markdown.defaultRules.link, {
 		match: markdown.inlineRegex(/^\[(https?:\/\/[^\s<]+[^<.,:;"')\]\s])\]\(([^\s\)]+)\)/),
@@ -179,8 +192,8 @@ const rulesEmbed = Object.assign({}, rules, {
 
 const parser = markdown.parserFor(rules);
 const htmlOutput = markdown.htmlFor(markdown.ruleOutput(rules, 'html'));
-const parserDiscord = markdown.parserFor(rulesDiscord);
-const htmlOutputDiscord = markdown.htmlFor(markdown.ruleOutput(rulesDiscord, 'html'));
+const parserDiscord = markdown.parserFor(rulesDiscordOnly);
+const htmlOutputDiscord = markdown.htmlFor(markdown.ruleOutput(rulesDiscordOnly, 'html'));
 const parserEmbed = markdown.parserFor(rulesEmbed);
 const htmlOutputEmbed = markdown.htmlFor(markdown.ruleOutput(rulesEmbed, 'html'));
 

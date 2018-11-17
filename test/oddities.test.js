@@ -34,3 +34,8 @@ test('no undserscore italic in one word', () => {
 	expect(markdown.toHTML('test_ing_stuff'))
 		.toBe('test_ing_stuff');
 });
+
+test('blockquotes shouldn\'t do anything', () => {
+	expect(markdown.toHTML('> blah'))
+		.toBe('&gt; blah');
+});

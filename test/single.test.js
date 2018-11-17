@@ -84,3 +84,13 @@ test('only embeds have [link](label)', () => {
 	expect(markdown.toHTML('[http://example.com](link)', { embed: true }))
 		.toBe('<a href="http://example.com">link</a>');
 });
+
+test('escape html', () => {
+	expect(markdown.toHTML('<b>test</b>'))
+		.toBe('&lt;b&gt;test&lt;/b&gt;');
+});
+
+test('discordOnly doesn\'t escape html', () => {
+	expect(markdown.toHTML('<b>test</b>', { discordOnly: true }))
+		.toBe('<b>test</b>');
+});
