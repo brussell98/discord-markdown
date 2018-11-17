@@ -56,3 +56,11 @@ test('don\'t parse stuff in code blocks', () => {
   expect(markdown.toHTML('`<@1234>`'))
     .toBe('<code>&lt;@1234&gt;</code>');
 });
+
+test('animated emojis work', () => {
+    expect(markdown.toHTML('heh <a:blah:1234>', {
+      discordCallback: { emoji: node => {
+        return '++' + (node.animated ? 'animated' : '') + ':' + node.id + ':++';
+      }}
+  })).toBe('heh ++animated:1234:++');
+});
