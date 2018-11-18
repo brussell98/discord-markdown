@@ -103,7 +103,13 @@ const discordCallbackDefaults = {
 	},
 	emoji: node => {
 		return ':' + markdown.sanitizeText(node.name) + ':';
-	}
+	},
+	everyone: node => {
+		return '@everyone';
+	},
+	here: node => {
+		return '@here';
+	},
 };
 
 let discordCallback = discordCallbackDefaults;
@@ -157,6 +163,26 @@ const rulesDiscord = {
 		},
 		html: function(node, output, state) {
 			return discordCallback.emoji(node);
+		}
+	},
+	discordEveryone: {
+		order: markdown.defaultRules.strong.order,
+		match: source => /^@everyone/.exec(source),
+		parse: function(capture, parse, state) {
+			return { };
+		},
+		html: function(node, output, state) {
+			return discordCallback.everyone(node);
+		}
+	},
+	discordHere: {
+		order: markdown.defaultRules.strong.order,
+		match: source => /^@here/.exec(source),
+		parse: function(capture, parse, state) {
+			return { };
+		},
+		html: function(node, output, state) {
+			return discordCallback.here(node);
 		}
 	},
 };

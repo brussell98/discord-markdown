@@ -35,10 +35,12 @@ toHTML('This **is** a __test__', options);
 * `embed`: boolean, if it should parse embed contents (rules are slightly different)
 * `discordOnly`: boolean, if it should only parse the discord-specific stuff
 * `discordCallback`: object, callbacks used for discord parsing. Each receive an object with different properties, and are expected to return an HTML escaped string
- * `user`: (`id`: number)
- * `channel`: (`id`: number)
- * `role`: (`id`: number)
- * `emoji`: (`animated`: boolean, `name`: string, `id`: number)
+  * `user`: (`id`: number) user mentions "@someperson"
+  * `channel`: (`id`: number) channel mentions "#somechannel"
+  * `role`: (`id`: number) role mentions "@somerole"
+  * `emoji`: (`animated`: boolean, `name`: string, `id`: number) emojis ":emote":
+  * `everyone`: () everyone mention "@everyone"
+  * `here`: () here mention "@here"
 
 Example:
 
