@@ -19,6 +19,8 @@ function htmlTag(tagName, content, attributes, isClosed) {
 	return unclosedTag;
 }
 
+let escapeHTML = true;
+
 const rules = {
 	codeBlock: Object.assign({}, markdown.defaultRules.codeBlock, {
 		html: node => {
@@ -71,7 +73,11 @@ const rules = {
 	text: Object.assign({}, markdown.defaultRules.text, {
 		match: source => /^[\s\S]+?(?=[^0-9A-Za-z\s\u00c0-\uffff-]|\n\n|\n|\w+:\S|$)/.exec(source),
 		html: function(node, output, state) {
-			return markdown.sanitizeText(node.content);
+			if (escapeHTML) {
+				return markdown.sanitizeText(node.content);
+			} else {
+				return node.content;
+			}
 		}
 	}),
 	specialCaseArms: {
@@ -192,7 +198,11 @@ const rulesDiscordOnly = Object.assign({}, rulesDiscord, {
 	text: Object.assign({}, markdown.defaultRules.text, {
 		match: source => /^[\s\S]+?(?=[^0-9A-Za-z\s\u00c0-\uffff-]|\n\n|\n|\w+:\S|$)/.exec(source),
 		html: function(node, output, state) {
-			return node.content;
+			if (escapeHTML) {
+				return markdown.sanitizeText(node.content);
+			} else {
+				return node.content;
+			}
 		}
 	}),
 });
@@ -212,10 +222,12 @@ const htmlOutputEmbed = markdown.htmlFor(markdown.ruleOutput(rulesEmbed, 'html')
 function toHTML(source, options) {
 	options = Object.assign({
 		embed: false,
+		escapeHTML: true,
 		discordOnly: false,
 		discordCallback: {},
 	}, options || {});
 
+	escapeHTML = options.escapeHTML;
 	let _parser = parser;
 	let _htmlOutput = htmlOutput;
 	if (options.discordOnly) {

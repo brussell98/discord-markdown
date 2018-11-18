@@ -90,7 +90,7 @@ test('escape html', () => {
 		.toBe('&lt;b&gt;test&lt;/b&gt;');
 });
 
-test('discordOnly doesn\'t escape html', () => {
-	expect(markdown.toHTML('<b>test</b>', { discordOnly: true }))
+test('don\'t escape html if set', () => {
+	expect(markdown.toHTML('<b>test</b>', { escapeHTML: false }))
 		.toBe('<b>test</b>');
 });

@@ -32,8 +32,9 @@ toHTML('This **is** a __test__', options);
 
 `options` is here an object, the following properties exist (all are optional):
 
-* `embed`: boolean, if it should parse embed contents (rules are slightly different)
-* `discordOnly`: boolean, if it should only parse the discord-specific stuff
+* `embed`: boolean (default: false), if it should parse embed contents (rules are slightly different)
+* `escapeHTML`: boolean (default: true), if it should escape HTML
+* `discordOnly`: boolean (default: false), if it should only parse the discord-specific stuff
 * `discordCallback`: object, callbacks used for discord parsing. Each receive an object with different properties, and are expected to return an HTML escaped string
   * `user`: (`id`: number) user mentions "@someperson"
   * `channel`: (`id`: number) channel mentions "#somechannel"

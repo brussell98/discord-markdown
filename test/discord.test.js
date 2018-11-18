@@ -65,6 +65,7 @@ test('here mentioning', () => {
 	expect(markdown.toHTML('Hey @here!', {
 		discordCallback: {
 			here: node => {
+				console.log('wat');
 				return '++here++';
 		}}
 	})).toBe('Hey ++here++!');
@@ -76,9 +77,14 @@ test('don\'t parse stuff in code blocks', () => {
 });
 
 test('animated emojis work', () => {
-		expect(markdown.toHTML('heh <a:blah:1234>', {
-			discordCallback: { emoji: node => {
-				return '++' + (node.animated ? 'animated' : '') + ':' + node.id + ':++';
-			}}
+	expect(markdown.toHTML('heh <a:blah:1234>', {
+		discordCallback: { emoji: node => {
+			return '++' + (node.animated ? 'animated' : '') + ':' + node.id + ':++';
+		}}
 	})).toBe('heh ++animated:1234:++');
+});
+
+test('with discord-only don\'t parse normal stuff', () => {
+	expect(markdown.toHTML('*yay* <@123456>', { discordOnly: true }))
+		.toBe('*yay* @123456');
 });
