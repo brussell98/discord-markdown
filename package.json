@@ -1,6 +1,6 @@
 {
 	"name": "discord-markdown",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"description": "A markdown parser for Discord messages",
 	"keywords": ["discord", "markdown", "parser", "md"],
 	"main": "index.js",
