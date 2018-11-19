@@ -1,13 +1,11 @@
 # discord-markdown
-A markdown parser with the same rules as Discord.
-
-> This is still in development. A complete set of tests is needed.
-> If you know any special cases of discord markdown let me know or submit a PR.
+A markdown parser for Discord messages.
 
 ## Using
 
 ```bash
-yarn add @brussell98/discord-markdown
+yarn add discord-markdown
+npm i discord-markdown
 ```
 
 ```js
@@ -59,4 +57,4 @@ toHTML('This **is** a __test__ for <@1234>', {
 
 ## Contributing
 
-Find an inconsistency? File an issue, or submit a pull request with the fix and updated test.
+Find an inconsistency? File an issue or submit a pull request with the fix and updated test(s).

@@ -1,7 +1,8 @@
 {
 	"name": "discord-markdown",
 	"version": "1.0.0",
-	"description": "A markdown parser configured with Discord's rules",
+	"description": "A markdown parser for Discord messages",
+	"keywords": ["discord", "markdown", "parser", "md"],
 	"main": "index.js",
 	"repository": "https://github.com/brussell98/discord-markdown.git",
 	"author": "Brussell, Sorunome",
@@ -11,10 +12,10 @@
 		"test": "jest --verbose"
 	},
 	"dependencies": {
-		"highlight.js": "^9.12.0",
+		"highlight.js": "^9.13.1",
 		"simple-markdown": "^0.4.2"
 	},
 	"devDependencies": {
-		"jest": "^21.2.1"
+		"jest": "^23.6.0"
 	}
 }

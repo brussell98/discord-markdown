@@ -22,7 +22,7 @@ function htmlTag(tagName, content, attributes, isClosed) {
 let escapeHTML = true;
 
 const rules = {
-	codeBlock: Object.assign({}, markdown.defaultRules.codeBlock, {
+	codeBlock: Object.assign({ }, markdown.defaultRules.codeBlock, {
 		html: node => {
 			if (node.lang && highlight.getLanguage(node.lang))
 				var code = highlight.highlight(node.lang, node.content);
@@ -30,12 +30,12 @@ const rules = {
 			return `<pre><code class="hljs${code ? ' ' + code.language : ''}">${code ? code.value : node.content}</code></pre>`
 		}
 	}),
-	fence: Object.assign({}, markdown.defaultRules.fence, {
+	fence: Object.assign({ }, markdown.defaultRules.fence, {
 		match: markdown.inlineRegex(/^ *(`{3,}) *(\S+)? *\n([\s\S]+?)\s*\1 *(?:\n *)*/)
 	}),
 	newline: markdown.defaultRules.newline,
 	escape: markdown.defaultRules.escape,
-	autolink: Object.assign({}, markdown.defaultRules.autolink, {
+	autolink: Object.assign({ }, markdown.defaultRules.autolink, {
 		parse: capture => {
 			return {
 				content: [{
@@ -49,7 +49,7 @@ const rules = {
 			return htmlTag('a', output(node.content, state), { href: markdown.sanitizeUrl(node.target) });
 		}
 	}),
-	url: Object.assign({}, markdown.defaultRules.url, {
+	url: Object.assign({ }, markdown.defaultRules.url, {
 		parse: capture => {
 			return {
 				content: [{
@@ -66,18 +66,17 @@ const rules = {
 	em: markdown.defaultRules.em,
 	strong: markdown.defaultRules.strong,
 	u: markdown.defaultRules.u,
-	del: Object.assign({}, markdown.defaultRules.del, {
+	del: Object.assign({ }, markdown.defaultRules.del, {
 		match: markdown.inlineRegex(/^~~(\s*?(?:\\[\s\S]|~(?!~)|[^\s\\~]|\s+(?!~~))+?\s*?)~~/),
 	}),
 	inlineCode: markdown.defaultRules.inlineCode,
-	text: Object.assign({}, markdown.defaultRules.text, {
+	text: Object.assign({ }, markdown.defaultRules.text, {
 		match: source => /^[\s\S]+?(?=[^0-9A-Za-z\s\u00c0-\uffff-]|\n\n|\n|\w+:\S|$)/.exec(source),
-		html: function(node, output, state) {
-			if (escapeHTML) {
+		html: function(node) {
+			if (escapeHTML)
 				return markdown.sanitizeText(node.content);
-			} else {
-				return node.content;
-			}
+
+			return node.content;
 		}
 	}),
 	specialCaseArms: {
@@ -92,7 +91,7 @@ const rules = {
 			return output(node.content, state);
 		},
 	},
-	br: Object.assign({}, markdown.defaultRules.br, {
+	br: Object.assign({ }, markdown.defaultRules.br, {
 		match: markdown.anyScopeRegex(/^\n/),
 	}),
 };
@@ -110,10 +109,10 @@ const discordCallbackDefaults = {
 	emoji: node => {
 		return ':' + markdown.sanitizeText(node.name) + ':';
 	},
-	everyone: node => {
+	everyone: () => {
 		return '@everyone';
 	},
-	here: node => {
+	here: () => {
 		return '@here';
 	},
 };
@@ -124,91 +123,90 @@ const rulesDiscord = {
 	discordUser: {
 		order: markdown.defaultRules.strong.order,
 		match: source => /^<@!?([0-9]*)>/.exec(source),
-		parse: function(capture, parse, state) {
+		parse: function(capture) {
 			return {
 				id: capture[1]
 			};
 		},
-		html: function(node, output, state) {
+		html: function(node) {
 			return discordCallback.user(node);
 		}
 	},
 	discordChannel: {
 		order: markdown.defaultRules.strong.order,
 		match: source => /^<#?([0-9]*)>/.exec(source),
-		parse: function(capture, parse, state) {
+		parse: function(capture) {
 			return {
 				id: capture[1]
 			};
 		},
-		html: function(node, output, state) {
+		html: function(node) {
 			return discordCallback.channel(node);
 		}
 	},
 	discordRole: {
 		order: markdown.defaultRules.strong.order,
 		match: source => /^<@&([0-9]*)>/.exec(source),
-		parse: function(capture, parse, state) {
+		parse: function(capture) {
 			return {
 				id: capture[1]
 			};
 		},
-		html: function(node, output, state) {
+		html: function(node) {
 			return discordCallback.role(node);
 		}
 	},
 	discordEmoji: {
 		order: markdown.defaultRules.strong.order,
 		match: source => /^<(a?):(\w+):([0-9]*)>/.exec(source),
-		parse: function(capture, parse, state) {
+		parse: function(capture) {
 			return {
 				animated: capture[1] === "a",
 				name: capture[2],
 				id: capture[3],
 			};
 		},
-		html: function(node, output, state) {
+		html: function(node) {
 			return discordCallback.emoji(node);
 		}
 	},
 	discordEveryone: {
 		order: markdown.defaultRules.strong.order,
 		match: source => /^@everyone/.exec(source),
-		parse: function(capture, parse, state) {
+		parse: function() {
 			return { };
 		},
-		html: function(node, output, state) {
+		html: function(node) {
 			return discordCallback.everyone(node);
 		}
 	},
 	discordHere: {
 		order: markdown.defaultRules.strong.order,
 		match: source => /^@here/.exec(source),
-		parse: function(capture, parse, state) {
+		parse: function() {
 			return { };
 		},
-		html: function(node, output, state) {
+		html: function(node) {
 			return discordCallback.here(node);
 		}
 	},
 };
 Object.assign(rules, rulesDiscord);
 
-const rulesDiscordOnly = Object.assign({}, rulesDiscord, {
-	text: Object.assign({}, markdown.defaultRules.text, {
+const rulesDiscordOnly = Object.assign({ }, rulesDiscord, {
+	text: Object.assign({ }, markdown.defaultRules.text, {
 		match: source => /^[\s\S]+?(?=[^0-9A-Za-z\s\u00c0-\uffff-]|\n\n|\n|\w+:\S|$)/.exec(source),
-		html: function(node, output, state) {
-			if (escapeHTML) {
+		html: function(node) {
+			if (escapeHTML)
 				return markdown.sanitizeText(node.content);
-			} else {
-				return node.content;
-			}
+
+			return node.content;
 		}
 	}),
 });
 
 
-const rulesEmbed = Object.assign({}, rules, {
+const rulesEmbed = Object.assign({ }, rules, {
 	link: markdown.defaultRules.link
 });
 
@@ -224,8 +222,8 @@ function toHTML(source, options) {
 		embed: false,
 		escapeHTML: true,
 		discordOnly: false,
-		discordCallback: {},
-	}, options || {});
+		discordCallback: { },
+	}, options || { });
 
 	escapeHTML = options.escapeHTML;
 	let _parser = parser;
@@ -238,7 +236,7 @@ function toHTML(source, options) {
 		_htmlOutput = htmlOutputEmbed;
 	}
 
-	discordCallback = Object.assign({}, discordCallbackDefaults, options.discordCallback);
+	discordCallback = Object.assign({ }, discordCallbackDefaults, options.discordCallback);
 
 	return _htmlOutput(_parser(source, { inline: true }));
 }

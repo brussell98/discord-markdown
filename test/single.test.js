@@ -50,7 +50,7 @@ test('Converts links to <a> links', () => {
 
 test('Fence normal codeblocks', () => {
 	expect(markdown.toHTML('text\n```\ncode\nblock\n```\nmore text'))
-	.toBe('text<br><pre><code class="hljs">code\nblock</code></pre>more text');
+		.toBe('text<br><pre><code class="hljs">code\nblock</code></pre>more text');
 });
 
 test('Fenced code blocks with hljs', () => {

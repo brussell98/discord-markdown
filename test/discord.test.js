@@ -55,19 +55,20 @@ test('custom emoji parsing', () => {
 test('everyone mentioning', () => {
 	expect(markdown.toHTML('Hey @everyone!', {
 		discordCallback: {
-			everyone: node => {
+			everyone: () => {
 				return '++everyone++';
-		}}
+			}
+		}
 	})).toBe('Hey ++everyone++!');
 });
 
 test('here mentioning', () => {
 	expect(markdown.toHTML('Hey @here!', {
 		discordCallback: {
-			here: node => {
-				console.log('wat');
+			here: () => {
 				return '++here++';
-		}}
+			}
+		}
 	})).toBe('Hey ++here++!');
 });
 
