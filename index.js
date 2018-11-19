@@ -19,8 +19,10 @@ function htmlTag(tagName, content, attributes, isClosed) {
 	return unclosedTag;
 }
 
+let escapeHTML = true;
+
 const rules = {
-	codeBlock: Object.assign(markdown.defaultRules.codeBlock, {
+	codeBlock: Object.assign({}, markdown.defaultRules.codeBlock, {
 		html: node => {
 			if (node.lang && highlight.getLanguage(node.lang))
 				var code = highlight.highlight(node.lang, node.content);
@@ -28,12 +30,12 @@ const rules = {
 			return `<pre><code class="hljs${code ? ' ' + code.language : ''}">${code ? code.value : node.content}</code></pre>`
 		}
 	}),
-	fence: Object.assign(markdown.defaultRules.fence, {
+	fence: Object.assign({}, markdown.defaultRules.fence, {
 		match: markdown.inlineRegex(/^ *(`{3,}) *(\S+)? *\n([\s\S]+?)\s*\1 *(?:\n *)*/)
 	}),
 	newline: markdown.defaultRules.newline,
 	escape: markdown.defaultRules.escape,
-	autolink: Object.assign(markdown.defaultRules.autolink, {
+	autolink: Object.assign({}, markdown.defaultRules.autolink, {
 		parse: capture => {
 			return {
 				content: [{
@@ -47,7 +49,7 @@ const rules = {
 			return htmlTag('a', output(node.content, state), { href: markdown.sanitizeUrl(node.target) });
 		}
 	}),
-	url: Object.assign(markdown.defaultRules.url, {
+	url: Object.assign({}, markdown.defaultRules.url, {
 		parse: capture => {
 			return {
 				content: [{
@@ -64,18 +66,184 @@ const rules = {
 	em: markdown.defaultRules.em,
 	strong: markdown.defaultRules.strong,
 	u: markdown.defaultRules.u,
-	del: markdown.defaultRules.del,
+	del: Object.assign({}, markdown.defaultRules.del, {
+		match: markdown.inlineRegex(/^~~(\s*?(?:\\[\s\S]|~(?!~)|[^\s\\~]|\s+(?!~~))+?\s*?)~~/),
+	}),
 	inlineCode: markdown.defaultRules.inlineCode,
-	text: Object.assign(markdown.defaultRules.text, {
-		match: source => /^[\s\S]+?(?=[^0-9A-Za-z\s\u00c0-\uffff-]|\n\n| {2,}\n|\w+:\S|$)/.exec(source)
-	})
+	text: Object.assign({}, markdown.defaultRules.text, {
+		match: source => /^[\s\S]+?(?=[^0-9A-Za-z\s\u00c0-\uffff-]|\n\n|\n|\w+:\S|$)/.exec(source),
+		html: function(node, output, state) {
+			if (escapeHTML) {
+				return markdown.sanitizeText(node.content);
+			} else {
+				return node.content;
+			}
+		}
+	}),
+	specialCaseArms: {
+		order: markdown.defaultRules.escape.order - 0.5,
+		match: source => /^¯\\_\(ツ\)_\/¯/.exec(source),
+		parse: function(capture, parse, state) {
+			return {
+				content: parse(capture[0].replace(/^¯\\_\(ツ\)_\/¯/, '¯\\\\\\_(ツ)_/¯'), state)
+			};
+		},
+		html: function(node, output, state) {
+			return output(node.content, state);
+		},
+	},
+	br: Object.assign({}, markdown.defaultRules.br, {
+		match: markdown.anyScopeRegex(/^\n/),
+	}),
 };
+
+const discordCallbackDefaults = {
+	user: node => {
+		return '@' + node.id;
+	},
+	channel: node => {
+		return '#' + node.id;
+	},
+	role: node => {
+		return '&' + node.id;
+	},
+	emoji: node => {
+		return ':' + markdown.sanitizeText(node.name) + ':';
+	},
+	everyone: node => {
+		return '@everyone';
+	},
+	here: node => {
+		return '@here';
+	},
+};
+
+let discordCallback = discordCallbackDefaults;
+
+const rulesDiscord = {
+	discordUser: {
+		order: markdown.defaultRules.strong.order,
+		match: source => /^<@!?([0-9]*)>/.exec(source),
+		parse: function(capture, parse, state) {
+			return {
+				id: capture[1]
+			};
+		},
+		html: function(node, output, state) {
+			return discordCallback.user(node);
+		}
+	},
+	discordChannel: {
+		order: markdown.defaultRules.strong.order,
+		match: source => /^<#?([0-9]*)>/.exec(source),
+		parse: function(capture, parse, state) {
+			return {
+				id: capture[1]
+			};
+		},
+		html: function(node, output, state) {
+			return discordCallback.channel(node);
+		}
+	},
+	discordRole: {
+		order: markdown.defaultRules.strong.order,
+		match: source => /^<@&([0-9]*)>/.exec(source),
+		parse: function(capture, parse, state) {
+			return {
+				id: capture[1]
+			};
+		},
+		html: function(node, output, state) {
+			return discordCallback.role(node);
+		}
+	},
+	discordEmoji: {
+		order: markdown.defaultRules.strong.order,
+		match: source => /^<(a?):(\w+):([0-9]*)>/.exec(source),
+		parse: function(capture, parse, state) {
+			return {
+				animated: capture[1] === "a",
+				name: capture[2],
+				id: capture[3],
+			};
+		},
+		html: function(node, output, state) {
+			return discordCallback.emoji(node);
+		}
+	},
+	discordEveryone: {
+		order: markdown.defaultRules.strong.order,
+		match: source => /^@everyone/.exec(source),
+		parse: function(capture, parse, state) {
+			return { };
+		},
+		html: function(node, output, state) {
+			return discordCallback.everyone(node);
+		}
+	},
+	discordHere: {
+		order: markdown.defaultRules.strong.order,
+		match: source => /^@here/.exec(source),
+		parse: function(capture, parse, state) {
+			return { };
+		},
+		html: function(node, output, state) {
+			return discordCallback.here(node);
+		}
+	},
+};
+Object.assign(rules, rulesDiscord);
+
+const rulesDiscordOnly = Object.assign({}, rulesDiscord, {
+	text: Object.assign({}, markdown.defaultRules.text, {
+		match: source => /^[\s\S]+?(?=[^0-9A-Za-z\s\u00c0-\uffff-]|\n\n|\n|\w+:\S|$)/.exec(source),
+		html: function(node, output, state) {
+			if (escapeHTML) {
+				return markdown.sanitizeText(node.content);
+			} else {
+				return node.content;
+			}
+		}
+	}),
+});
+
+
+const rulesEmbed = Object.assign({}, rules, {
+	link: markdown.defaultRules.link
+});
 
 const parser = markdown.parserFor(rules);
 const htmlOutput = markdown.htmlFor(markdown.ruleOutput(rules, 'html'));
+const parserDiscord = markdown.parserFor(rulesDiscordOnly);
+const htmlOutputDiscord = markdown.htmlFor(markdown.ruleOutput(rulesDiscordOnly, 'html'));
+const parserEmbed = markdown.parserFor(rulesEmbed);
+const htmlOutputEmbed = markdown.htmlFor(markdown.ruleOutput(rulesEmbed, 'html'));
 
+function toHTML(source, options) {
+	options = Object.assign({
+		embed: false,
+		escapeHTML: true,
+		discordOnly: false,
+		discordCallback: {},
+	}, options || {});
+
+	escapeHTML = options.escapeHTML;
+	let _parser = parser;
+	let _htmlOutput = htmlOutput;
+	if (options.discordOnly) {
+		_parser = parserDiscord;
+		_htmlOutput = htmlOutputDiscord;
+	} else if (options.embed) {
+		_parser = parserEmbed;
+		_htmlOutput = htmlOutputEmbed;
+	}
+
+	discordCallback = Object.assign({}, discordCallbackDefaults, options.discordCallback);
+
+	return _htmlOutput(_parser(source, { inline: true }));
+}
 module.exports = {
 	parser: source => parser(source, { inline: true }),
 	htmlOutput,
-	toHTML: source => htmlOutput(parser(source, { inline: true }))
+	toHTML,
 };
