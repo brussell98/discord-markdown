@@ -2,7 +2,7 @@ const markdown = require('../index');
 
 test('user parsing', () => {
 	expect(markdown.toHTML('hey <@1234>!'))
-		.toBe('hey @1234!');
+		.toBe('hey <span class="d-mention d-user">@1234</span>!');
 });
 
 test('custom user parsing', () => {
@@ -10,12 +10,12 @@ test('custom user parsing', () => {
 		discordCallback: { user: node => {
 			return '++@' + node.id + '++';
 		}}
-	})).toBe('hey ++@1234++!');
+	})).toBe('hey <span class="d-mention d-user">++@1234++</span>!');
 });
 
 test('channel parsing', () => {
 	expect(markdown.toHTML('goto <#1234>, please'))
-		.toBe('goto #1234, please');
+		.toBe('goto <span class="d-mention d-channel">#1234</span>, please');
 });
 
 test('custom channel parsing', () => {
@@ -23,12 +23,12 @@ test('custom channel parsing', () => {
 		discordCallback: { channel: node => {
 			return '++#' + node.id + '++';
 		}}
-	})).toBe('goto ++#1234++, please');
+	})).toBe('goto <span class="d-mention d-channel">++#1234++</span>, please');
 });
 
 test('role parsing', () => {
 	expect(markdown.toHTML('is any of <@&1234> here?'))
-		.toBe('is any of &1234 here?');
+		.toBe('is any of <span class="d-mention d-role">&1234</span> here?');
 });
 
 test('custom role parsing', () => {
@@ -36,12 +36,12 @@ test('custom role parsing', () => {
 		discordCallback: { role: node => {
 			return '++&' + node.id + '++';
 		}}
-	})).toBe('is any of ++&1234++ here?');
+	})).toBe('is any of <span class="d-mention d-role">++&1234++</span> here?');
 });
 
 test('emoji parsing', () => {
 	expect(markdown.toHTML('heh <:blah:1234>'))
-		.toBe('heh :blah:');
+		.toBe('heh <span class="d-emoji">:blah:</span>');
 });
 
 test('custom emoji parsing', () => {
@@ -49,7 +49,7 @@ test('custom emoji parsing', () => {
 		discordCallback: { emoji: node => {
 			return '++:' + node.id + ':++';
 		}}
-	})).toBe('heh ++:1234:++');
+	})).toBe('heh <span class="d-emoji">++:1234:++</span>');
 });
 
 test('everyone mentioning', () => {
@@ -59,7 +59,7 @@ test('everyone mentioning', () => {
 				return '++everyone++';
 			}
 		}
-	})).toBe('Hey ++everyone++!');
+	})).toBe('Hey <span class="d-mention d-user">++everyone++</span>!');
 });
 
 test('here mentioning', () => {
@@ -69,7 +69,7 @@ test('here mentioning', () => {
 				return '++here++';
 			}
 		}
-	})).toBe('Hey ++here++!');
+	})).toBe('Hey <span class="d-mention d-user">++here++</span>!');
 });
 
 test('don\'t parse stuff in code blocks', () => {
@@ -82,10 +82,15 @@ test('animated emojis work', () => {
 		discordCallback: { emoji: node => {
 			return '++' + (node.animated ? 'animated' : '') + ':' + node.id + ':++';
 		}}
-	})).toBe('heh ++animated:1234:++');
+	})).toBe('heh <span class="d-emoji d-emoji-animated">++animated:1234:++</span>');
 });
 
 test('with discord-only don\'t parse normal stuff', () => {
 	expect(markdown.toHTML('*yay* <@123456>', { discordOnly: true }))
-		.toBe('*yay* @123456');
+		.toBe('*yay* <span class="d-mention d-user">@123456</span>');
+});
+
+test('spoilers in a message', () => {
+	expect(markdown.toHTML('This contains {{a spoiler}}'))
+		.toBe('This contains <span class="d-spoiler">a spoiler</span>');
 });

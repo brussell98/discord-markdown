@@ -39,3 +39,8 @@ test('blockquotes shouldn\'t do anything', () => {
 	expect(markdown.toHTML('> blah'))
 		.toBe('&gt; blah');
 });
+
+test('Codeblocks should work with ini', () => {
+	expect(markdown.toHTML('```ini\n[01] asdasd\n```'))
+		.toContain('hljs ini');
+});

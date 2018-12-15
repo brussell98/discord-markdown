@@ -1,9 +1,17 @@
 const markdown = require('simple-markdown');
 const highlight = require('highlight.js');
 
-function htmlTag(tagName, content, attributes, isClosed) {
-	attributes = attributes || { };
-	isClosed = typeof isClosed !== 'undefined' ? isClosed : true;
+function htmlTag(tagName, content, attributes, isClosed = true, state = { }) {
+	if (typeof isClosed === 'object') {
+		state = isClosed;
+		isClosed = true;
+	}
+
+	if (!attributes)
+		attributes = { };
+
+	if (attributes.class && state.cssModuleNames)
+		attributes.class = attributes.class.split(' ').map(cl => state.cssModuleNames[cl] || cl).join(' ');
 
 	let attributeString = '';
 	for (let attr in attributes) {
@@ -18,16 +26,18 @@ function htmlTag(tagName, content, attributes, isClosed) {
 		return unclosedTag + content + '</' + tagName + '>';
 	return unclosedTag;
 }
-
-let escapeHTML = true;
+markdown.htmlTag = htmlTag;
 
 const rules = {
 	codeBlock: Object.assign({ }, markdown.defaultRules.codeBlock, {
-		html: node => {
+		html: (node, output, state) => {
+			let code;
 			if (node.lang && highlight.getLanguage(node.lang))
-				var code = highlight.highlight(node.lang, node.content);
+				code = highlight.highlight(node.lang, node.content, true); // Discord seems to set ignore ignoreIllegals: true
 
-			return `<pre><code class="hljs${code ? ' ' + code.language : ''}">${code ? code.value : node.content}</code></pre>`
+			return htmlTag('pre', htmlTag(
+				'code', code ? code.value : node.content, { class: `hljs${code ? ' ' + code.language : ''}` }, state
+			), null, state);
 		}
 	}),
 	fence: Object.assign({ }, markdown.defaultRules.fence, {
@@ -39,14 +49,14 @@ const rules = {
 		parse: capture => {
 			return {
 				content: [{
-					type: "text",
+					type: 'text',
 					content: capture[1]
 				}],
 				target: capture[1]
 			};
 		},
 		html: (node, output, state) => {
-			return htmlTag('a', output(node.content, state), { href: markdown.sanitizeUrl(node.target) });
+			return htmlTag('a', output(node.content, state), { href: markdown.sanitizeUrl(node.target) }, state);
 		}
 	}),
 	url: Object.assign({ }, markdown.defaultRules.url, {
@@ -60,7 +70,7 @@ const rules = {
 			}
 		},
 		html: (node, output, state) => {
-			return htmlTag('a', output(node.content, state), { href: markdown.sanitizeUrl(node.target) });
+			return htmlTag('a', output(node.content, state), { href: markdown.sanitizeUrl(node.target) }, state);
 		}
 	}),
 	em: markdown.defaultRules.em,
@@ -72,8 +82,8 @@ const rules = {
 	inlineCode: markdown.defaultRules.inlineCode,
 	text: Object.assign({ }, markdown.defaultRules.text, {
 		match: source => /^[\s\S]+?(?=[^0-9A-Za-z\s\u00c0-\uffff-]|\n\n|\n|\w+:\S|$)/.exec(source),
-		html: function(node) {
-			if (escapeHTML)
+		html: function(node, output, state) {
+			if (state.escapeHTML)
 				return markdown.sanitizeText(node.content);
 
 			return node.content;
@@ -94,27 +104,27 @@ const rules = {
 	br: Object.assign({ }, markdown.defaultRules.br, {
 		match: markdown.anyScopeRegex(/^\n/),
 	}),
+	spoiler: {
+		order: 0,
+		match: source => /^{{([^\n]+)}}/.exec(source),
+		parse: function(capture, parse, state) {
+			return {
+				content: parse(capture[1], state)
+			};
+		},
+		html: function(node, output, state) {
+			return htmlTag('span', output(node.content, state), { class: 'd-spoiler' }, state);
+		}
+	}
 };
 
 const discordCallbackDefaults = {
-	user: node => {
-		return '@' + node.id;
-	},
-	channel: node => {
-		return '#' + node.id;
-	},
-	role: node => {
-		return '&' + node.id;
-	},
-	emoji: node => {
-		return ':' + markdown.sanitizeText(node.name) + ':';
-	},
-	everyone: () => {
-		return '@everyone';
-	},
-	here: () => {
-		return '@here';
-	},
+	user: node => '@' + node.id,
+	channel: node => '#' + node.id,
+	role: node => '&' + node.id,
+	emoji: node => ':' + markdown.sanitizeText(node.name) + ':',
+	everyone: () => '@everyone',
+	here: () => '@here'
 };
 
 let discordCallback = discordCallbackDefaults;
@@ -128,8 +138,8 @@ const rulesDiscord = {
 				id: capture[1]
 			};
 		},
-		html: function(node) {
-			return discordCallback.user(node);
+		html: function(node, output, state) {
+			return htmlTag('span', discordCallback.user(node), { class: 'd-mention d-user' }, state);
 		}
 	},
 	discordChannel: {
@@ -140,8 +150,8 @@ const rulesDiscord = {
 				id: capture[1]
 			};
 		},
-		html: function(node) {
-			return discordCallback.channel(node);
+		html: function(node, output, state) {
+			return htmlTag('span', discordCallback.channel(node), { class: 'd-mention d-channel' }, state);
 		}
 	},
 	discordRole: {
@@ -152,8 +162,8 @@ const rulesDiscord = {
 				id: capture[1]
 			};
 		},
-		html: function(node) {
-			return discordCallback.role(node);
+		html: function(node, output, state) {
+			return htmlTag('span', discordCallback.role(node), { class: 'd-mention d-role' }, state);
 		}
 	},
 	discordEmoji: {
@@ -166,8 +176,8 @@ const rulesDiscord = {
 				id: capture[3],
 			};
 		},
-		html: function(node) {
-			return discordCallback.emoji(node);
+		html: function(node, output, state) {
+			return htmlTag('span', discordCallback.emoji(node), { class: `d-emoji${node.animated ? ' d-emoji-animated' : ''}` }, state);
 		}
 	},
 	discordEveryone: {
@@ -176,8 +186,8 @@ const rulesDiscord = {
 		parse: function() {
 			return { };
 		},
-		html: function(node) {
-			return discordCallback.everyone(node);
+		html: function(node, output, state) {
+			return htmlTag('span', discordCallback.everyone(node), { class: 'd-mention d-user' }, state);
 		}
 	},
 	discordHere: {
@@ -186,23 +196,23 @@ const rulesDiscord = {
 		parse: function() {
 			return { };
 		},
-		html: function(node) {
-			return discordCallback.here(node);
+		html: function(node, output, state) {
+			return htmlTag('span', discordCallback.here(node), { class: 'd-mention d-user' }, state);
 		}
-	},
+	}
 };
 Object.assign(rules, rulesDiscord);
 
 const rulesDiscordOnly = Object.assign({ }, rulesDiscord, {
 	text: Object.assign({ }, markdown.defaultRules.text, {
 		match: source => /^[\s\S]+?(?=[^0-9A-Za-z\s\u00c0-\uffff-]|\n\n|\n|\w+:\S|$)/.exec(source),
-		html: function(node) {
-			if (escapeHTML)
+		html: function(node, output, state) {
+			if (state.escapeHTML)
 				return markdown.sanitizeText(node.content);
 
 			return node.content;
 		}
-	}),
+	})
 });
 
 
@@ -217,15 +227,24 @@ const htmlOutputDiscord = markdown.htmlFor(markdown.ruleOutput(rulesDiscordOnly,
 const parserEmbed = markdown.parserFor(rulesEmbed);
 const htmlOutputEmbed = markdown.htmlFor(markdown.ruleOutput(rulesEmbed, 'html'));
 
+/**
+ * Parse markdown and return the HTML output
+ * @param {String} source Source markdown content
+ * @param {Object} [options] Options for the parser
+ * @param {Boolean} [options.embed=false] Parse as embed content
+ * @param {Boolean} [options.escapeHTML=true] Escape HTML in the output
+ * @param {Boolean} [options.discordOnly=false] Only parse Discord-specific stuff (such as mentions)
+ * @param {Object} [options.discordCallback] Provide custom handling for mentions and emojis
+ * @param {Object} [options.cssModuleNames] An object mapping css classes to css module classes
+ */
 function toHTML(source, options) {
 	options = Object.assign({
 		embed: false,
 		escapeHTML: true,
 		discordOnly: false,
-		discordCallback: { },
+		discordCallback: { }
 	}, options || { });
 
-	escapeHTML = options.escapeHTML;
 	let _parser = parser;
 	let _htmlOutput = htmlOutput;
 	if (options.discordOnly) {
@@ -236,12 +255,19 @@ function toHTML(source, options) {
 		_htmlOutput = htmlOutputEmbed;
 	}
 
+	// TODO: Move into state
 	discordCallback = Object.assign({ }, discordCallbackDefaults, options.discordCallback);
 
-	return _htmlOutput(_parser(source, { inline: true }));
+	const state = {
+		inline: true,
+		escapeHTML: options.escapeHTML,
+		cssModuleNames: options.cssModuleNames || null
+	};
+
+	return _htmlOutput(_parser(source, state), state);
 }
 module.exports = {
 	parser: source => parser(source, { inline: true }),
 	htmlOutput,
-	toHTML,
+	toHTML
 };
