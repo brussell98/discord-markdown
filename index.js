@@ -135,18 +135,6 @@ const rules = {
 	br: Object.assign({ }, markdown.defaultRules.br, {
 		match: markdown.anyScopeRegex(/^\n/),
 	}),
-	spoiler: {
-		order: 0,
-		match: source => /^{{([^\n]+)}}/.exec(source),
-		parse: function(capture, parse, state) {
-			return {
-				content: parse(capture[1], state)
-			};
-		},
-		html: function(node, output, state) {
-			return htmlTag('span', output(node.content, state), { class: 'd-spoiler' }, state);
-		}
-	}
 };
 
 const rulesDiscord = {

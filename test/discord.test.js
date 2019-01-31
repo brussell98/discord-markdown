@@ -90,11 +90,6 @@ test('with discord-only don\'t parse normal stuff', () => {
 		.toBe('*yay* <span class="d-mention d-user">@123456</span>');
 });
 
-test('spoilers in a message', () => {
-	expect(markdown.toHTML('This contains {{a spoiler}}'))
-		.toBe('This contains <span class="d-spoiler">a spoiler</span>');
-});
-
 test('spoilers are parsed correctly', () => {
 	expect(markdown.toHTML('||fox||'))
 		.toBe('<spoiler>fox</spoiler>');
