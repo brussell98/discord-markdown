@@ -34,8 +34,7 @@ const discordCallbackDefaults = {
 	role: node => '&' + node.id,
 	emoji: node => ':' + markdown.sanitizeText(node.name) + ':',
 	everyone: () => '@everyone',
-	here: () => '@here',
-	spoiler: node => '<spoiler>' + node.content + '</spoiler>'
+	here: () => '@here'
 };
 
 let discordCallback = discordCallbackDefaults;
@@ -69,9 +68,7 @@ const rules = {
 			};
 		},
 		html: function(node, output, state) {
-			return output(node.preContent, state) + discordCallback.spoiler({
-				content: output(node.content, state)
-			});
+			return output(node.preContent, state) + htmlTag('span', output(node.content, state), { class: 'd-spoiler' }, state);
 		}
 	},
 	newline: markdown.defaultRules.newline,

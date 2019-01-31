@@ -92,26 +92,26 @@ test('with discord-only don\'t parse normal stuff', () => {
 
 test('spoilers are parsed correctly', () => {
 	expect(markdown.toHTML('||fox||'))
-		.toBe('<spoiler>fox</spoiler>');
+		.toBe('<span class="d-spoiler">fox</span>');
 	expect(markdown.toHTML('|| fox ||'))
-		.toBe('<spoiler> fox </spoiler>');
+		.toBe('<span class="d-spoiler"> fox </span>');
 	expect(markdown.toHTML('|| fox | bunny ||'))
-		.toBe('<spoiler> fox | bunny </spoiler>');
+		.toBe('<span class="d-spoiler"> fox | bunny </span>');
 	expect(markdown.toHTML('a ||fox|| and a ||bunny||\nlike to ||hop||'))
-		.toBe('a <spoiler>fox</spoiler> and a <spoiler>bunny</spoiler><br>like to <spoiler>hop</spoiler>');
+		.toBe('a <span class="d-spoiler">fox</span> and a <span class="d-spoiler">bunny</span><br>like to <span class="d-spoiler">hop</span>');
 	expect(markdown.toHTML('this ||fox\nreally likes|| to dig'))
-		.toBe('this <spoiler>fox<br>really likes</spoiler> to dig');
+		.toBe('this <span class="d-spoiler">fox<br>really likes</span> to dig');
 });
 
 test('spoiler oddities', () => {
 	expect(markdown.toHTML('||||'))
 		.toBe('||||');
 	expect(markdown.toHTML('|| ||'))
-		.toBe('<spoiler> </spoiler>');
+		.toBe('<span class="d-spoiler"> </span>');
 	expect(markdown.toHTML('||||||'))
-		.toBe('<spoiler>|</spoiler>|');
+		.toBe('<span class="d-spoiler">|</span>|');
 	expect(markdown.toHTML('||<a>yay</a>||'))
-		.toBe('<spoiler>&lt;a&gt;yay&lt;/a&gt;</spoiler>');
+		.toBe('<span class="d-spoiler">&lt;a&gt;yay&lt;/a&gt;</span>');
 	expect(markdown.toHTML('*yay* ||fox||'))
-		.toBe('<em>yay</em> <spoiler>fox</spoiler>');
+		.toBe('<em>yay</em> <span class="d-spoiler">fox</span>');
 })
