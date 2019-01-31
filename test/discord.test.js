@@ -89,3 +89,27 @@ test('with discord-only don\'t parse normal stuff', () => {
 	expect(markdown.toHTML('*yay* <@123456>', { discordOnly: true }))
 		.toBe('*yay* @123456');
 });
+
+test('spoilers are parsed correctly', () => {
+	expect(markdown.toHTML('||fox||'))
+		.toBe('<spoiler>fox</spoiler>');
+	expect(markdown.toHTML('|| fox ||'))
+		.toBe('<spoiler> fox </spoiler>');
+	expect(markdown.toHTML('|| fox | bunny ||'))
+		.toBe('<spoiler> fox | bunny </spoiler>');
+	expect(markdown.toHTML('a ||fox|| and a ||bunny||\nlike to ||hop||'))
+		.toBe('a <spoiler>fox</spoiler> and a <spoiler>bunny</spoiler><br>like to <spoiler>hop</spoiler>');
+	expect(markdown.toHTML('this ||fox\nreally likes|| to dig'))
+		.toBe('this <spoiler>fox<br>really likes</spoiler> to dig');
+});
+
+test('spoiler oddities', () => {
+	expect(markdown.toHTML('||||'))
+		.toBe('||||');
+	expect(markdown.toHTML('|| ||'))
+		.toBe('<spoiler> </spoiler>');
+	expect(markdown.toHTML('||||||'))
+		.toBe('<spoiler>|</spoiler>|');
+	expect(markdown.toHTML('||<a>yay</a>||'))
+		.toBe('<spoiler>&lt;a&gt;yay&lt;/a&gt;</spoiler>');
+})

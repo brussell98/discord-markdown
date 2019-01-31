@@ -21,6 +21,32 @@ function htmlTag(tagName, content, attributes, isClosed) {
 
 let escapeHTML = true;
 
+const discordCallbackDefaults = {
+	user: node => {
+		return '@' + node.id;
+	},
+	channel: node => {
+		return '#' + node.id;
+	},
+	role: node => {
+		return '&' + node.id;
+	},
+	emoji: node => {
+		return ':' + markdown.sanitizeText(node.name) + ':';
+	},
+	everyone: () => {
+		return '@everyone';
+	},
+	here: () => {
+		return '@here';
+	},
+	spoiler: node => {
+		return '<spoiler>' + node.content + '</spoiler>';
+	}
+};
+
+let discordCallback = discordCallbackDefaults;
+
 const rules = {
 	codeBlock: Object.assign({ }, markdown.defaultRules.codeBlock, {
 		html: node => {
@@ -33,6 +59,21 @@ const rules = {
 	fence: Object.assign({ }, markdown.defaultRules.fence, {
 		match: markdown.inlineRegex(/^ *(`{3,}) *(\S+)? *\n([\s\S]+?)\s*\1 *(?:\n *)*/)
 	}),
+	spoiler: {
+		order: markdown.defaultRules.fence.order,
+		match: markdown.anyScopeRegex(/^(.*?)\|\|((?:(?!\|\|)(?:.|\s){2})+?[^|]?|.)\|\|/),
+		parse: function(capture, parse) {
+			return {
+				preContent: parse(capture[1]),
+				content: parse(capture[2])
+			};
+		},
+		html: function(node, output, state) {
+			return output(node.preContent, state) + discordCallback.spoiler({
+				content: output(node.content, state)
+			});
+		}
+	},
 	newline: markdown.defaultRules.newline,
 	escape: markdown.defaultRules.escape,
 	autolink: Object.assign({ }, markdown.defaultRules.autolink, {
@@ -95,29 +136,6 @@ const rules = {
 		match: markdown.anyScopeRegex(/^\n/),
 	}),
 };
-
-const discordCallbackDefaults = {
-	user: node => {
-		return '@' + node.id;
-	},
-	channel: node => {
-		return '#' + node.id;
-	},
-	role: node => {
-		return '&' + node.id;
-	},
-	emoji: node => {
-		return ':' + markdown.sanitizeText(node.name) + ':';
-	},
-	everyone: () => {
-		return '@everyone';
-	},
-	here: () => {
-		return '@here';
-	},
-};
-
-let discordCallback = discordCallbackDefaults;
 
 const rulesDiscord = {
 	discordUser: {

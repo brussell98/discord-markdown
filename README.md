@@ -34,12 +34,13 @@ toHTML('This **is** a __test__', options);
 * `escapeHTML`: boolean (default: true), if it should escape HTML
 * `discordOnly`: boolean (default: false), if it should only parse the discord-specific stuff
 * `discordCallback`: object, callbacks used for discord parsing. Each receive an object with different properties, and are expected to return an HTML escaped string
-  * `user`: (`id`: number) user mentions "@someperson"
-  * `channel`: (`id`: number) channel mentions "#somechannel"
-  * `role`: (`id`: number) role mentions "@somerole"
-  * `emoji`: (`animated`: boolean, `name`: string, `id`: number) emojis ":emote":
+  * `user`: (`id`: string) user mentions "@someperson"
+  * `channel`: (`id`: string) channel mentions "#somechannel"
+  * `role`: (`id`: string) role mentions "@somerole"
+  * `emoji`: (`animated`: boolean, `name`: string, `id`: string) emojis ":emote":
   * `everyone`: () everyone mention "@everyone"
   * `here`: () here mention "@here"
+  * `spoiler`: (`content`: string) spoiler parsing "||spoiler||". `content` is already HTML-escaped (if setting is set)
 
 Example:
 
