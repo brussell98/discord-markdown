@@ -17,43 +17,41 @@ console.log(toHTML('This **is** a __test__'));
 
 Fenced codeblocks will include highlight.js tags and classes.
 
-### Advanced usage
-
-Discord has custom patterns for user mentions, channel mentions etc. `discord-markdown` provides a way to easily define callbacks so that you can have custom parsing behavior on those.
-
-`discord-markdown` has multiple options to set:
+## Options
 
 ```js
 const { toHTML } = require('discord-markdown');
 toHTML('This **is** a __test__', options);
 ```
 
-`options` is here an object, the following properties exist (all are optional):
+`options` is an object with the following properties (all are optional):
 
-* `embed`: boolean (default: false), if it should parse embed contents (rules are slightly different)
-* `escapeHTML`: boolean (default: true), if it should escape HTML
-* `discordOnly`: boolean (default: false), if it should only parse the discord-specific stuff
-* `discordCallback`: object, callbacks used for discord parsing. Each receive an object with different properties, and are expected to return an HTML escaped string
-  * `user`: (`id`: string) user mentions "@someperson"
-  * `channel`: (`id`: string) channel mentions "#somechannel"
-  * `role`: (`id`: string) role mentions "@somerole"
-  * `emoji`: (`animated`: boolean, `name`: string, `id`: string) emojis ":emote":
-  * `everyone`: () everyone mention "@everyone"
-  * `here`: () here mention "@here"
+* `embed`: Boolean (default: false), if it should parse embed contents (rules are slightly different)
+* `escapeHTML`: Boolean (default: true), if it should escape HTML
+* `discordOnly`: Boolean (default: false), if it should only parse the discord-specific stuff
+* `discordCallback`: Object, callbacks used for discord parsing. Each receive an object with different properties, and are expected to return an HTML escaped string
+  * `user`: (`id`: Number) User mentions "@someperson"
+  * `channel`: (`id`: Number) Channel mentions "#somechannel"
+  * `role`: (`id`: Number) Role mentions "@somerole"
+  * `emoji`: (`animated`: Boolean, `name`: String, `id`: Number) emojis ":emote":
+  * `everyone`: () Everyone mention "@everyone"
+  * `here`: () Here mention "@here"
   * `spoiler`: (`content`: string) spoiler parsing "||spoiler||". `content` is already HTML-escaped (if setting is set)
+* `cssModuleNames`: Object, maps CSS class names to CSS module class names
+
+### Mention and Emoji Handling
+
+Using the `discordCallback` option you can define custom functions to handle parsing mention and emoji content. You can use these to turn IDs into names.
 
 Example:
 
 ```js
 const { toHTML } = require('discord-markdown');
-toHTML('This **is** a __test__ for <@1234>', {
+toHTML('This is a mention for <@95286900801146880>', {
 	discordCallback: {
-		user: node => {
-			// optionally fetch the username of that person based on their userid (node.id)
-			return '@' + node.id;
-		}
+		user: node => '@' + users[node.id];
 	}
-});
+}); // -> This is a mention for @Brussell
 ```
 
 ## Contributing

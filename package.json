@@ -1,11 +1,19 @@
 {
 	"name": "discord-markdown",
-	"version": "2.0.0",
+	"version": "2.1.1",
 	"description": "A markdown parser for Discord messages",
-	"keywords": ["discord", "markdown", "parser", "md"],
+	"keywords": [
+		"discord",
+		"markdown",
+		"parser",
+		"md"
+	],
 	"main": "index.js",
 	"repository": "https://github.com/brussell98/discord-markdown.git",
-	"author": "Brussell, Sorunome",
+	"author": "Brussell (https://brussell.me)",
+	"contributors": [
+		"Sorunome"
+	],
 	"license": "MIT",
 	"private": false,
 	"scripts": {
@@ -16,6 +24,7 @@
 		"simple-markdown": "^0.4.2"
 	},
 	"devDependencies": {
+		"eslint": "^5.10.0",
 		"jest": "^23.6.0"
 	}
 }

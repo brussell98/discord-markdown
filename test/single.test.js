@@ -94,3 +94,15 @@ test('don\'t escape html if set', () => {
 	expect(markdown.toHTML('<b>test</b>', { escapeHTML: false }))
 		.toBe('<b>test</b>');
 });
+
+test('css module support', () => {
+	expect(markdown.toHTML('Hey @everyone check this out!', {
+		cssModuleNames: {
+			'd-mention': '_DiscordMessage_1ve6S_d-mention_A64y',
+			'd-user': '_DiscordMessage_1ve6S_d-user_75Tef'
+		}
+	})).toBe('Hey <span class="_DiscordMessage_1ve6S_d-mention_A64y _DiscordMessage_1ve6S_d-user_75Tef">@everyone</span> check this out!');
+
+	expect(markdown.toHTML('Hey @everyone check this out!'))
+		.toBe('Hey <span class="d-mention d-user">@everyone</span> check this out!');
+});
