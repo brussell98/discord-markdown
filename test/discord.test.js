@@ -112,4 +112,6 @@ test('spoiler oddities', () => {
 		.toBe('<spoiler>|</spoiler>|');
 	expect(markdown.toHTML('||<a>yay</a>||'))
 		.toBe('<spoiler>&lt;a&gt;yay&lt;/a&gt;</spoiler>');
+	expect(markdown.toHTML('*yay* ||fox||'))
+		.toBe('<em>yay</em> <spoiler>fox</spoiler>');
 })
