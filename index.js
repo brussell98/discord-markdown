@@ -110,7 +110,7 @@ const rules = {
 	}),
 	spoiler: {
 		order: 0,
-		match: source => /^{{([^\n]+)}}/.exec(source),
+		match: source => /^\|\|((?:.|\n)+?)\|\|/.exec(source),
 		parse: function(capture, parse, state) {
 			return {
 				content: parse(capture[1], state)

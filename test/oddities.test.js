@@ -52,3 +52,12 @@ test('Codeblocks should work with css modules', () => {
 		}
 	})).toContain('<span class="testing">[01]</span>');
 });
+
+test('Spoiler edge-cases', () => {
+	expect(markdown.toHTML('||||'))
+		.toBe('||||');
+	expect(markdown.toHTML('|| ||'))
+		.toBe('<span class="d-spoiler"> </span>');
+	expect(markdown.toHTML('||||||'))
+		.toBe('<span class="d-spoiler">|</span>|');
+});

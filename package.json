@@ -1,6 +1,6 @@
 {
 	"name": "discord-markdown",
-	"version": "2.1.1",
+	"version": "2.1.2",
 	"description": "A markdown parser for Discord messages",
 	"keywords": [
 		"discord",
@@ -17,7 +17,8 @@
 	"license": "MIT",
 	"private": false,
 	"scripts": {
-		"test": "jest --verbose"
+		"test": "jest --verbose",
+		"lint": "eslint ."
 	},
 	"dependencies": {
 		"highlight.js": "^9.13.1",

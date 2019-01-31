@@ -21,4 +21,5 @@ cache:
     - "node_modules"
 
 script:
+  - yarn run lint
   - yarn run test

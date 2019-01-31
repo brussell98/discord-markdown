@@ -90,7 +90,19 @@ test('with discord-only don\'t parse normal stuff', () => {
 		.toBe('*yay* <span class="d-mention d-user">@123456</span>');
 });
 
-test('spoilers in a message', () => {
-	expect(markdown.toHTML('This contains {{a spoiler}}'))
-		.toBe('This contains <span class="d-spoiler">a spoiler</span>');
+test('spoilers are handled correctly', () => {
+	expect(markdown.toHTML('||spoiler||'))
+		.toBe('<span class="d-spoiler">spoiler</span>');
+	expect(markdown.toHTML('|| spoiler ||'))
+		.toBe('<span class="d-spoiler"> spoiler </span>');
+	expect(markdown.toHTML('|| spoiler | message ||'))
+		.toBe('<span class="d-spoiler"> spoiler | message </span>');
+	expect(markdown.toHTML('a ||spoiler|| may have ||multiple\nlines||'))
+		.toBe('a <span class="d-spoiler">spoiler</span> may have <span class="d-spoiler">multiple<br>lines</span>');
+	expect(markdown.toHTML('||strange||markdown||'))
+		.toBe('<span class="d-spoiler">strange</span>markdown||');
+	expect(markdown.toHTML('||<i>itallics</i>||'))
+		.toBe('<span class="d-spoiler">&lt;i&gt;itallics&lt;/i&gt;</span>');
+	expect(markdown.toHTML('||```\ncode\nblock\n```||'))
+		.toBe('<span class="d-spoiler"><pre><code class="hljs">code\nblock</code></pre></span>');
 });
