@@ -17,7 +17,8 @@
 	"license": "MIT",
 	"private": false,
 	"scripts": {
-		"test": "jest --verbose"
+		"test": "jest --verbose",
+		"lint": "eslint ."
 	},
 	"dependencies": {
 		"highlight.js": "^9.13.1",
