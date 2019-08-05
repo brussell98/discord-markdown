@@ -48,14 +48,19 @@ test('Converts links to <a> links', () => {
 		.toBe('<a href="https://brussell.me">https://brussell.me</a>');
 });
 
-test('Fence normal codeblocks', () => {
+test('Fence normal code blocks', () => {
 	expect(markdown.toHTML('text\n```\ncode\nblock\n```\nmore text'))
-		.toBe('text<br><pre><code class="hljs">code\nblock</code></pre>more text');
+		.toBe('text<br><pre><code class="hljs">code\nblock</code></pre><br>more text');
 });
 
 test('Fenced code blocks with hljs', () => {
 	expect(markdown.toHTML('```js\nconst one = 1;\nconsole.log(one);\n```'))
 		.toBe('<pre><code class="hljs js"><span class="hljs-keyword">const</span> one = <span class="hljs-number">1</span>;\n<span class="hljs-built_in">console</span>.log(one);</code></pre>');
+});
+
+test('Fenced code blocks on one line', () => {
+	expect(markdown.toHTML('`test`\n\n```test```'))
+		.toBe('<code>test</code><br><br><pre><code class="hljs">test</code></pre>');
 });
 
 test('Escaped marks', () => {
@@ -70,7 +75,17 @@ test('Multiline', () => {
 		.toBe('some <em>awesome</em> text<br>that <strong>spreads</strong> lines');
 });
 
-// apparently discord special-cased this exact thing, so that in this character sequence the \ doesn't escape
+test('Block quotes', () => {
+	expect(markdown.toHTML('> text > here'))
+		.toBe('<blockquote>text &gt; here</blockquote>');
+	expect(markdown.toHTML('>text'))
+		.toBe('&gt;text');
+	expect(markdown.toHTML('outside\n>>> inside\ntext\n> here\ndoes not end'))
+		.toBe('outside<br><blockquote>inside<br>text<br>&gt; here<br>does not end</blockquote>');
+	expect(markdown.toHTML('>>> test\n```js\ncode```'))
+		.toBe('<blockquote>test<br><pre><code class="hljs js">code</code></pre></blockquote>');
+});
+
 test('don\'t drop arms', () => {
 	expect(markdown.toHTML('¯\\_(ツ)_/¯'))
 		.toBe('¯\\_(ツ)_/¯');

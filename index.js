@@ -17,19 +17,52 @@ function htmlTag(tagName, content, attributes, isClosed = true, state = { }) {
 	for (let attr in attributes) {
 		// Removes falsy attributes
 		if (Object.prototype.hasOwnProperty.call(attributes, attr) && attributes[attr])
-			attributeString += ' ' + attr + '="' + attributes[attr] + '"';
+			attributeString += ` ${markdown.sanitizeText(attr)}="${markdown.sanitizeText(attributes[attr])}"`;
 	}
 
-	let unclosedTag = '<' + tagName + attributeString + '>';
+	let unclosedTag = `<${tagName}${attributeString}>`;
 
 	if (isClosed)
-		return unclosedTag + content + '</' + tagName + '>';
+		return unclosedTag + content + `</${tagName}>`;
 	return unclosedTag;
 }
 markdown.htmlTag = htmlTag;
 
 const rules = {
+	blockQuote: Object.assign({}, markdown.defaultRules.blockQuote, {
+		match: function(source, state, prevSource) {
+			return !/^$|\n *$/.test(prevSource) || state.inQuote ? null : /^( *>>> ([\s\S]*))|^( *> [^\n]+(\n *> [^\n]+)*\n?)/.exec(source);
+		},
+		parse: function(capture, parse, state) {
+			const all = capture[0];
+			const isBlock = Boolean(/^ *>>> ?/.exec(all));
+			const removeSyntaxRegex = isBlock ? /^ *>>> ?/ : /^ *> ?/gm;
+			const content = all.replace(removeSyntaxRegex, '');
+
+			state.inQuote = true
+			if (!isBlock)
+				state.inline = true;
+
+			const parsed = parse(content, state);
+
+			state.inQuote = state.inQuote || false;
+			state.inline = state.inline || false;
+
+			return {
+				content: parsed,
+				type: 'blockQuote'
+			}
+		}
+	}),
 	codeBlock: Object.assign({ }, markdown.defaultRules.codeBlock, {
+		match: markdown.inlineRegex(/^```(([a-z0-9-]+?)\n+)?\n*([^]+?)\n*```/i),
+		parse: function(capture, parse, state) {
+			return {
+				lang: (capture[2] || '').trim(),
+				content: capture[3] || '',
+				inQuote: state.inQuote || false
+			};
+		},
 		html: (node, output, state) => {
 			let code;
 			if (node.lang && highlight.getLanguage(node.lang))
@@ -43,9 +76,6 @@ const rules = {
 				'code', code ? code.value : node.content, { class: `hljs${code ? ' ' + code.language : ''}` }, state
 			), null, state);
 		}
-	}),
-	fence: Object.assign({ }, markdown.defaultRules.fence, {
-		match: markdown.inlineRegex(/^ *(`{3,}) *(\S+)? *\n([\s\S]+?)\s*\1 *(?:\n *)*/)
 	}),
 	newline: markdown.defaultRules.newline,
 	escape: markdown.defaultRules.escape,
@@ -80,8 +110,8 @@ const rules = {
 	em: markdown.defaultRules.em,
 	strong: markdown.defaultRules.strong,
 	u: markdown.defaultRules.u,
-	del: Object.assign({ }, markdown.defaultRules.del, {
-		match: markdown.inlineRegex(/^~~(\s*?(?:\\[\s\S]|~(?!~)|[^\s\\~]|\s+(?!~~))+?\s*?)~~/),
+	strike: Object.assign({ }, markdown.defaultRules.del, {
+		match: markdown.inlineRegex(/^~~([\s\S]+?)~~(?!_)/),
 	}),
 	inlineCode: markdown.defaultRules.inlineCode,
 	text: Object.assign({ }, markdown.defaultRules.text, {
@@ -93,12 +123,13 @@ const rules = {
 			return node.content;
 		}
 	}),
-	specialCaseArms: {
-		order: markdown.defaultRules.escape.order - 0.5,
-		match: source => /^¯\\_\(ツ\)_\/¯/.exec(source),
-		parse: function(capture, parse, state) {
+	emoticon: {
+		order: markdown.defaultRules.text.order,
+		match: source => /^(¯\\_\(ツ\)_\/¯)/.exec(source),
+		parse: function(capture) {
 			return {
-				content: parse(capture[0].replace(/^¯\\_\(ツ\)_\/¯/, '¯\\\\\\_(ツ)_/¯'), state)
+				type: 'text',
+				content: capture[1]
 			};
 		},
 		html: function(node, output, state) {
@@ -110,7 +141,7 @@ const rules = {
 	}),
 	spoiler: {
 		order: 0,
-		match: source => /^\|\|((?:.|\n)+?)\|\|/.exec(source),
+		match: source => /^\|\|([\s\S]+?)\|\|/.exec(source),
 		parse: function(capture, parse, state) {
 			return {
 				content: parse(capture[1], state)
@@ -172,7 +203,7 @@ const rulesDiscord = {
 	},
 	discordEmoji: {
 		order: markdown.defaultRules.strong.order,
-		match: source => /^<(a?):(\w+):([0-9]*)>/.exec(source),
+		match: source => /^<(a?):(\w+):(\d+)>/.exec(source),
 		parse: function(capture) {
 			return {
 				animated: capture[1] === "a",
@@ -264,6 +295,7 @@ function toHTML(source, options) {
 
 	const state = {
 		inline: true,
+		inQuote: false,
 		escapeHTML: options.escapeHTML,
 		cssModuleNames: options.cssModuleNames || null
 	};

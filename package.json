@@ -1,6 +1,6 @@
 {
 	"name": "discord-markdown",
-	"version": "2.1.2",
+	"version": "2.2.0",
 	"description": "A markdown parser for Discord messages",
 	"keywords": [
 		"discord",
@@ -21,11 +21,11 @@
 		"lint": "eslint ."
 	},
 	"dependencies": {
-		"highlight.js": "^9.13.1",
-		"simple-markdown": "^0.4.2"
+		"highlight.js": "^9.15.9",
+		"simple-markdown": "^0.5.1"
 	},
 	"devDependencies": {
-		"eslint": "^5.10.0",
-		"jest": "^23.6.0"
+		"eslint": "^6.1.0",
+		"jest": "^24.8.0"
 	}
 }
