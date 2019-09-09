@@ -12,13 +12,15 @@
 	"repository": "https://github.com/brussell98/discord-markdown.git",
 	"author": "Brussell (https://brussell.me)",
 	"contributors": [
-		"Sorunome"
+		"Sorunome",
+		"Dot."
 	],
 	"license": "MIT",
 	"private": false,
 	"scripts": {
 		"test": "jest --verbose",
-		"lint": "eslint ."
+		"lint": "eslint .",
+		"dist": "rollup -c"
 	},
 	"dependencies": {
 		"highlight.js": "^9.15.9",
@@ -26,6 +28,11 @@
 	},
 	"devDependencies": {
 		"eslint": "^6.1.0",
-		"jest": "^24.8.0"
+		"jest": "^24.8.0",
+		"rollup": "^1.21.0",
+		"rollup-plugin-commonjs": "^10.1.0",
+		"rollup-plugin-node-resolve": "^5.2.0",
+		"rollup-plugin-replace": "^2.2.0",
+		"rollup-plugin-terser": "^5.1.1"
 	}
 }

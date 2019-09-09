@@ -59,3 +59,10 @@ typings/
 
 # vscode
 .vscode/
+
+# yarn lock
+yarn.lock
+
+# pnpm
+pnpm-debug.log
+pnpm-lock.yaml
