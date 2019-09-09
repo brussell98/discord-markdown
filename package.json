@@ -12,8 +12,7 @@
 	"repository": "https://github.com/brussell98/discord-markdown.git",
 	"author": "Brussell (https://brussell.me)",
 	"contributors": [
-		"Sorunome",
-		"Dot."
+		"Sorunome"
 	],
 	"license": "MIT",
 	"private": false,
