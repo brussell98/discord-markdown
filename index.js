@@ -31,7 +31,7 @@ markdown.htmlTag = htmlTag;
 const rules = {
 	blockQuote: Object.assign({}, markdown.defaultRules.blockQuote, {
 		match: function(source, state, prevSource) {
-			return !/^$|\n *$/.test(prevSource) || state.inQuote ? null : /^( *>>> ([\s\S]*))|^( *> [^\n]+(\n *> [^\n]+)*\n?)/.exec(source);
+			return !/^$|\n *$/.test(prevSource) || state.inQuote ? null : /^( *>>> ([\s\S]*))|^( *> [^\n]*(\n *> [^\n]*)*\n?)/.exec(source);
 		},
 		parse: function(capture, parse, state) {
 			const all = capture[0];

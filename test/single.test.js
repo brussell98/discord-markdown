@@ -86,6 +86,8 @@ test('Block quotes', () => {
 		.toBe('outside<br><blockquote>inside<br>text<br>&gt; here<br>does not end</blockquote>');
 	expect(markdown.toHTML('>>> test\n```js\ncode```'))
 		.toBe('<blockquote>test<br><pre><code class="hljs js">code</code></pre></blockquote>');
+	expect(markdown.toHTML('> text\n> \n> here'))
+		.toBe('<blockquote>text<br><br>here</blockquote>');
 });
 
 test('don\'t drop arms', () => {
