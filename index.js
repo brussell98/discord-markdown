@@ -39,17 +39,8 @@ const rules = {
 			const removeSyntaxRegex = isBlock ? /^ *>>> ?/ : /^ *> ?/gm;
 			const content = all.replace(removeSyntaxRegex, '');
 
-			state.inQuote = true
-			if (!isBlock)
-				state.inline = true;
-
-			const parsed = parse(content, state);
-
-			state.inQuote = state.inQuote || false;
-			state.inline = state.inline || false;
-
 			return {
-				content: parsed,
+				content: parse(content, Object.assign({}, state, {inQuote: true})),
 				type: 'blockQuote'
 			}
 		}
@@ -116,7 +107,7 @@ const rules = {
 	inlineCode: Object.assign({ }, markdown.defaultRules.inlineCode, {
 		match: source => markdown.defaultRules.inlineCode.match.regex.exec(source),
 		html: function(node, output, state) {
-			return htmlTag('code', node.content.trim(), null, state);
+			return htmlTag('code', markdown.sanitizeText(node.content.trim()), null, state);
 		}
 	}),
 	text: Object.assign({ }, markdown.defaultRules.text, {
