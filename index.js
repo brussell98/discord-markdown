@@ -107,7 +107,19 @@ const rules = {
 			return htmlTag('a', output(node.content, state), { href: markdown.sanitizeUrl(node.target) }, state);
 		}
 	}),
-	em: markdown.defaultRules.em,
+	em: Object.assign({ }, markdown.defaultRules.em, {
+		parse: function(capture, parse, state) {
+			const parsed = markdown.defaultRules.em.parse(capture, parse, Object.assign({ }, state, { inEmphasis: true }));
+            parsed.inEmphasis = state.inEmphasis || false;
+            return parsed;
+		},
+		html: function(node, output, state) {
+			if (node.inEmphasis) {
+				return output(node.content, state);
+			}
+			return markdown.defaultRules.em.html(node, output, state);
+		}
+	}),
 	strong: markdown.defaultRules.strong,
 	u: markdown.defaultRules.u,
 	strike: Object.assign({ }, markdown.defaultRules.del, {
@@ -298,6 +310,7 @@ function toHTML(source, options) {
 	const state = {
 		inline: true,
 		inQuote: false,
+		inEmphasis: false,
 		escapeHTML: options.escapeHTML,
 		cssModuleNames: options.cssModuleNames || null
 	};
