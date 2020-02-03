@@ -110,15 +110,8 @@ const rules = {
 	em: Object.assign({ }, markdown.defaultRules.em, {
 		parse: function(capture, parse, state) {
 			const parsed = markdown.defaultRules.em.parse(capture, parse, Object.assign({ }, state, { inEmphasis: true }));
-			parsed.inEmphasis = state.inEmphasis || false;
-			return parsed;
+			return state.inEmphasis ? parsed.content : parsed;
 		},
-		html: function(node, output, state) {
-			if (node.inEmphasis) {
-				return output(node.content, state);
-			}
-			return markdown.defaultRules.em.html(node, output, state);
-		}
 	}),
 	strong: markdown.defaultRules.strong,
 	u: markdown.defaultRules.u,
