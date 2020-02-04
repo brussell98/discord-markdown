@@ -62,4 +62,6 @@ test('Nested <em>', () => {
 		.toBe('<em>hello world foo bar hello world</em>');
 	expect(markdown.toHTML('_hello world *foo __blah__ bar* hello world_'))
 		.toBe('<em>hello world foo <u>blah</u> bar hello world</em>');
+	expect(markdown.toHTML('_hello *world*_ not em *foo*'))
+		.toBe('<em>hello world</em> not em <em>foo</em>');
 });

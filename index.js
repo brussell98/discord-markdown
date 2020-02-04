@@ -40,7 +40,7 @@ const rules = {
 			const content = all.replace(removeSyntaxRegex, '');
 
 			return {
-				content: parse(content, Object.assign({}, state, {inQuote: true})),
+				content: parse(content, Object.assign({ }, state, { inQuote: true })),
 				type: 'blockQuote'
 			}
 		}
