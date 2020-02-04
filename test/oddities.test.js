@@ -56,3 +56,10 @@ test('Spoiler edge-cases', () => {
 	expect(markdown.toHTML('||||||'))
 		.toBe('<span class="d-spoiler">|</span>|');
 });
+
+test('Nested <em>', () => {
+	expect(markdown.toHTML('_hello world *foo bar* hello world_'))
+		.toBe('<em>hello world foo bar hello world</em>');
+	expect(markdown.toHTML('_hello world *foo __blah__ bar* hello world_'))
+		.toBe('<em>hello world foo <u>blah</u> bar hello world</em>');
+});
