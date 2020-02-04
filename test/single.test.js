@@ -88,6 +88,8 @@ test('Block quotes', () => {
 		.toBe('<blockquote>test<br><pre><code class="hljs js">code</code></pre></blockquote>');
 	expect(markdown.toHTML('> text\n> \n> here'))
 		.toBe('<blockquote>text<br><br>here</blockquote>');
+	expect(markdown.toHTML('text\n\n> Lorem ipsum\n>> Lorem ipsum\n> Lorem ipsum\n> > Lorem ipsum\n> Lorem ipsum\n\nLorem ipsum\n\n> Lorem ipsum\n\nLorem ipsum\n\n>>> text\ntext\ntext\n'))
+		.toBe('text<br><br><blockquote>Lorem ipsum<br></blockquote>&gt;&gt; Lorem ipsum<br><blockquote>Lorem ipsum<br>&gt; Lorem ipsum<br>Lorem ipsum<br></blockquote><br>Lorem ipsum<br><br><blockquote>Lorem ipsum<br></blockquote><br>Lorem ipsum<br><br><blockquote>text<br>text<br>text<br></blockquote>');
 });
 
 test('don\'t drop arms', () => {
