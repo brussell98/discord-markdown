@@ -1,3 +1,9 @@
+# [2.3.1](https://github.com/brussell98/discord-markdown/compare/v2.3.0...v2.3.1) (2020-02-20)
+
+### Fixes
+
+- Code blocks without highlighting were not escaping HTML, allowing the browser to render arbitrary HTML
+
 # [2.3.0](https://github.com/brussell98/discord-markdown/compare/v2.2.0...v2.3.0) (2020-02-04)
 
 - Fixed inline code strings not being trimmed and sanitized

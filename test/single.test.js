@@ -109,6 +109,10 @@ test('only embeds have [label](link)', () => {
 test('escape html', () => {
 	expect(markdown.toHTML('<b>test</b>'))
 		.toBe('&lt;b&gt;test&lt;/b&gt;');
+	expect(markdown.toHTML('```\n\n<b>test</b>\n```'))
+		.toBe('<pre><code class="hljs">&lt;b&gt;test&lt;/b&gt;</code></pre>');
+	expect(markdown.toHTML('```html\n\n<b>test</b>\n```'))
+		.toBe('<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">b</span>&gt;</span>test<span class="hljs-tag">&lt;/<span class="hljs-name">b</span>&gt;</span></code></pre>');
 });
 
 test('don\'t escape html if set', () => {
