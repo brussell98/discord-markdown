@@ -78,12 +78,18 @@ test('Multiline', () => {
 test('Block quotes', () => {
 	expect(markdown.toHTML('> text > here'))
 		.toBe('<blockquote>text &gt; here</blockquote>');
+	expect(markdown.toHTML('> text\nhere'))
+		.toBe('<blockquote>text<br></blockquote>here');
 	expect(markdown.toHTML('>text'))
 		.toBe('&gt;text');
 	expect(markdown.toHTML('outside\n>>> inside\ntext\n> here\ndoes not end'))
 		.toBe('outside<br><blockquote>inside<br>text<br>&gt; here<br>does not end</blockquote>');
 	expect(markdown.toHTML('>>> test\n```js\ncode```'))
 		.toBe('<blockquote>test<br><pre><code class="hljs js">code</code></pre></blockquote>');
+	expect(markdown.toHTML('> text\n> \n> here'))
+		.toBe('<blockquote>text<br><br>here</blockquote>');
+	expect(markdown.toHTML('text\n\n> Lorem ipsum\n>> Lorem ipsum\n> Lorem ipsum\n> > Lorem ipsum\n> Lorem ipsum\n\nLorem ipsum\n\n> Lorem ipsum\n\nLorem ipsum\n\n>>> text\ntext\ntext\n'))
+		.toBe('text<br><br><blockquote>Lorem ipsum<br></blockquote>&gt;&gt; Lorem ipsum<br><blockquote>Lorem ipsum<br>&gt; Lorem ipsum<br>Lorem ipsum<br></blockquote><br>Lorem ipsum<br><br><blockquote>Lorem ipsum<br></blockquote><br>Lorem ipsum<br><br><blockquote>text<br>text<br>text<br></blockquote>');
 });
 
 test('don\'t drop arms', () => {
@@ -103,6 +109,10 @@ test('only embeds have [label](link)', () => {
 test('escape html', () => {
 	expect(markdown.toHTML('<b>test</b>'))
 		.toBe('&lt;b&gt;test&lt;/b&gt;');
+	expect(markdown.toHTML('```\n\n<b>test</b>\n```'))
+		.toBe('<pre><code class="hljs">&lt;b&gt;test&lt;/b&gt;</code></pre>');
+	expect(markdown.toHTML('```html\n\n<b>test</b>\n```'))
+		.toBe('<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">b</span>&gt;</span>test<span class="hljs-tag">&lt;/<span class="hljs-name">b</span>&gt;</span></code></pre>');
 });
 
 test('don\'t escape html if set', () => {

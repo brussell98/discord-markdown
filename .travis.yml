@@ -5,7 +5,7 @@ node_js:
 
 dist: trusty
 
-sudo: false
+os: linux
 
 notifications:
   email: false
