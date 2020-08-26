@@ -29,7 +29,7 @@ function htmlTag(tagName, content, attributes, isClosed = true, state = { }) {
 markdown.htmlTag = htmlTag;
 
 const rules = {
-	blockQuote: Object.assign({}, markdown.defaultRules.blockQuote, {
+	blockQuote: Object.assign({ }, markdown.defaultRules.blockQuote, {
 		match: function(source, state, prevSource) {
 			return !/^$|\n *$/.test(prevSource) || state.inQuote ? null : /^( *>>> ([\s\S]*))|^( *> [^\n]*(\n *> [^\n]*)*\n?)/.exec(source);
 		},
@@ -155,15 +155,12 @@ const rules = {
 };
 
 const discordCallbackDefaults = {
-	user: node => '@' + node.id,
-	channel: node => '#' + node.id,
-	role: node => '&' + node.id,
-	emoji: node => ':' + markdown.sanitizeText(node.name) + ':',
+	user: node => '@' + markdown.sanitizeText(node.id),
+	channel: node => '#' + markdown.sanitizeText(node.id),
+	role: node => '&' + markdown.sanitizeText(node.id),
 	everyone: () => '@everyone',
 	here: () => '@here'
 };
-
-let discordCallback = discordCallbackDefaults;
 
 const rulesDiscord = {
 	discordUser: {
@@ -175,7 +172,7 @@ const rulesDiscord = {
 			};
 		},
 		html: function(node, output, state) {
-			return htmlTag('span', discordCallback.user(node), { class: 'd-mention d-user' }, state);
+			return htmlTag('span', state.discordCallback.user(node), { class: 'd-mention d-user' }, state);
 		}
 	},
 	discordChannel: {
@@ -187,7 +184,7 @@ const rulesDiscord = {
 			};
 		},
 		html: function(node, output, state) {
-			return htmlTag('span', discordCallback.channel(node), { class: 'd-mention d-channel' }, state);
+			return htmlTag('span', state.discordCallback.channel(node), { class: 'd-mention d-channel' }, state);
 		}
 	},
 	discordRole: {
@@ -199,7 +196,7 @@ const rulesDiscord = {
 			};
 		},
 		html: function(node, output, state) {
-			return htmlTag('span', discordCallback.role(node), { class: 'd-mention d-role' }, state);
+			return htmlTag('span', state.discordCallback.role(node), { class: 'd-mention d-role' }, state);
 		}
 	},
 	discordEmoji: {
@@ -213,7 +210,11 @@ const rulesDiscord = {
 			};
 		},
 		html: function(node, output, state) {
-			return htmlTag('span', discordCallback.emoji(node), { class: `d-emoji${node.animated ? ' d-emoji-animated' : ''}` }, state);
+			return htmlTag('img', '', {
+				class: `d-emoji${node.animated ? ' d-emoji-animated' : ''}`,
+				src: `https://cdn.discordapp.com/emojis/${node.id}.png`,
+				alt: `:${node.name}:`
+			}, state);
 		}
 	},
 	discordEveryone: {
@@ -223,7 +224,7 @@ const rulesDiscord = {
 			return { };
 		},
 		html: function(node, output, state) {
-			return htmlTag('span', discordCallback.everyone(node), { class: 'd-mention d-user' }, state);
+			return htmlTag('span', state.discordCallback.everyone(node), { class: 'd-mention d-user' }, state);
 		}
 	},
 	discordHere: {
@@ -233,10 +234,11 @@ const rulesDiscord = {
 			return { };
 		},
 		html: function(node, output, state) {
-			return htmlTag('span', discordCallback.here(node), { class: 'd-mention d-user' }, state);
+			return htmlTag('span', state.discordCallback.here(node), { class: 'd-mention d-user' }, state);
 		}
 	}
 };
+
 Object.assign(rules, rulesDiscord);
 
 const rulesDiscordOnly = Object.assign({ }, rulesDiscord, {
@@ -250,7 +252,6 @@ const rulesDiscordOnly = Object.assign({ }, rulesDiscord, {
 		}
 	})
 });
-
 
 const rulesEmbed = Object.assign({ }, rules, {
 	link: markdown.defaultRules.link
@@ -273,7 +274,10 @@ const htmlOutputEmbed = markdown.htmlFor(markdown.ruleOutput(rulesEmbed, 'html')
  * @param {Object} [options.discordCallback] Provide custom handling for mentions and emojis
  * @param {Object} [options.cssModuleNames] An object mapping css classes to css module classes
  */
-function toHTML(source, options) {
+function toHTML(source, options, customParser, customHtmlOutput) {
+	if ((customParser || customHtmlOutput) && (!customParser || !customHtmlOutput))
+		throw new Error('You must pass both a custom parser and custom htmlOutput function, not just one');
+
 	options = Object.assign({
 		embed: false,
 		escapeHTML: true,
@@ -283,7 +287,10 @@ function toHTML(source, options) {
 
 	let _parser = parser;
 	let _htmlOutput = htmlOutput;
-	if (options.discordOnly) {
+	if (customParser) {
+		_parser = customParser;
+		_htmlOutput = customHtmlOutput;
+	} else if (options.discordOnly) {
 		_parser = parserDiscord;
 		_htmlOutput = htmlOutputDiscord;
 	} else if (options.embed) {
@@ -291,21 +298,25 @@ function toHTML(source, options) {
 		_htmlOutput = htmlOutputEmbed;
 	}
 
-	// TODO: Move into state
-	discordCallback = Object.assign({ }, discordCallbackDefaults, options.discordCallback);
-
 	const state = {
 		inline: true,
 		inQuote: false,
 		inEmphasis: false,
 		escapeHTML: options.escapeHTML,
-		cssModuleNames: options.cssModuleNames || null
+		cssModuleNames: options.cssModuleNames || null,
+		discordCallback: Object.assign({ }, discordCallbackDefaults, options.discordCallback)
 	};
 
 	return _htmlOutput(_parser(source, state), state);
 }
+
 module.exports = {
 	parser: source => parser(source, { inline: true }),
 	htmlOutput,
-	toHTML
+	toHTML,
+	rules,
+	rulesDiscordOnly,
+	rulesEmbed,
+	markdownEngine: markdown,
+	htmlTag
 };

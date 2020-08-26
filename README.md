@@ -8,6 +8,8 @@ yarn add discord-markdown
 npm i discord-markdown
 ```
 
+For browser use, import `dist/discord-markdown.min.js`
+
 ```js
 const { parser, htmlOutput, toHTML } = require('discord-markdown');
 
@@ -33,7 +35,6 @@ toHTML('This **is** a __test__', options);
   * `user`: (`id`: Number) User mentions "@someperson"
   * `channel`: (`id`: Number) Channel mentions "#somechannel"
   * `role`: (`id`: Number) Role mentions "@somerole"
-  * `emoji`: (`animated`: Boolean, `name`: String, `id`: Number) emojis ":emote":
   * `everyone`: () Everyone mention "@everyone"
   * `here`: () Here mention "@here"
 * `cssModuleNames`: Object, maps CSS class names to CSS module class names
@@ -52,6 +53,10 @@ toHTML('This is a mention for <@95286900801146880>', {
 	}
 }); // -> This is a mention for @Brussell
 ```
+
+## Customizing
+
+It is possible to change the rules used by discord-markdown. Take a look at the code to see how to create your own modified rule set.
 
 ## Contributing
 

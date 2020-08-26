@@ -8,7 +8,8 @@ export default {
 	output: {
 		format: 'iife',
 		file: 'dist/discord-markdown.min.js',
-		name: 'discordMarkdown'
+		name: 'discordMarkdown',
+		exports: 'named'
 	},
 	plugins: [
 		resolve(),

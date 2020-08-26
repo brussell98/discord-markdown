@@ -1,3 +1,20 @@
+# [2.4.0](https://github.com/brussell98/discord-markdown/compare/v2.3.1...v2.4.0) (2020-08-25)
+
+### Features
+
+- Added a minified dist file for use in browsers
+- Added the ability to create custom rule sets
+
+### Improvements
+
+- Changed Discord emojis to image elements
+- Moved `discordCallback` to the state
+- Upgraded highlight.js to version 10
+
+### Fixes
+
+- Added text sanitizing to all user input in the default `discordCallback` functions
+
 # [2.3.1](https://github.com/brussell98/discord-markdown/compare/v2.3.0...v2.3.1) (2020-02-20)
 
 ### Fixes
