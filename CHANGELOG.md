@@ -1,3 +1,9 @@
+# [2.4.1](https://github.com/brussell98/discord-markdown/compare/v2.4.0...v2.4.1) (2020-09-23)
+
+### Fixes
+
+- Removed unneeded end tag for emoji images
+
 # [2.4.0](https://github.com/brussell98/discord-markdown/compare/v2.3.1...v2.4.0) (2020-08-25)
 
 ### Features

@@ -214,7 +214,7 @@ const rulesDiscord = {
 				class: `d-emoji${node.animated ? ' d-emoji-animated' : ''}`,
 				src: `https://cdn.discordapp.com/emojis/${node.id}.png`,
 				alt: `:${node.name}:`
-			}, state);
+			}, false, state);
 		}
 	},
 	discordEveryone: {

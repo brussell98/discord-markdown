@@ -41,7 +41,7 @@ test('custom role parsing', () => {
 
 test('emoji parsing', () => {
 	expect(markdown.toHTML('heh <:blah:1234>'))
-		.toBe('heh <img class="d-emoji" src="https://cdn.discordapp.com/emojis/1234.png" alt=":blah:"></img>');
+		.toBe('heh <img class="d-emoji" src="https://cdn.discordapp.com/emojis/1234.png" alt=":blah:">');
 });
 
 test('everyone mentioning', () => {
@@ -71,7 +71,7 @@ test('don\'t parse stuff in code blocks', () => {
 
 test('animated emojis work', () => {
 	expect(markdown.toHTML('heh <a:blah:1234>', ))
-		.toBe('heh <img class="d-emoji d-emoji-animated" src="https://cdn.discordapp.com/emojis/1234.png" alt=":blah:"></img>');
+		.toBe('heh <img class="d-emoji d-emoji-animated" src="https://cdn.discordapp.com/emojis/1234.png" alt=":blah:">');
 });
 
 test('with discord-only don\'t parse normal stuff', () => {
