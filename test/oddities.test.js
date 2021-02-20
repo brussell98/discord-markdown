@@ -30,7 +30,7 @@ test('multiple new lines', () => {
 		.toBe('some<br><br>text');
 });
 
-test('no undserscore italic in one word', () => {
+test('no underscore italic in one word', () => {
 	expect(markdown.toHTML('test_ing_stuff'))
 		.toBe('test_ing_stuff');
 });

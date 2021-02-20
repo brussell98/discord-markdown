@@ -258,11 +258,11 @@ const rulesEmbed = Object.assign({ }, rules, {
 });
 
 const parser = markdown.parserFor(rules);
-const htmlOutput = markdown.htmlFor(markdown.ruleOutput(rules, 'html'));
+const htmlOutput = markdown.outputFor(rules, 'html');
 const parserDiscord = markdown.parserFor(rulesDiscordOnly);
-const htmlOutputDiscord = markdown.htmlFor(markdown.ruleOutput(rulesDiscordOnly, 'html'));
+const htmlOutputDiscord = markdown.outputFor(rulesDiscordOnly, 'html');
 const parserEmbed = markdown.parserFor(rulesEmbed);
-const htmlOutputEmbed = markdown.htmlFor(markdown.ruleOutput(rulesEmbed, 'html'));
+const htmlOutputEmbed = markdown.outputFor(rulesEmbed, 'html');
 
 /**
  * Parse markdown and return the HTML output

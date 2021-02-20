@@ -71,7 +71,7 @@ test('don\'t parse stuff in code blocks', () => {
 
 test('animated emojis work', () => {
 	expect(markdown.toHTML('heh <a:blah:1234>', ))
-		.toBe('heh <img class="d-emoji d-emoji-animated" src="https://cdn.discordapp.com/emojis/1234.png" alt=":blah:">');
+		.toBe('heh <img class="d-emoji d-emoji-animated" src="https://cdn.discordapp.com/emojis/1234.gif" alt=":blah:">');
 });
 
 test('with discord-only don\'t parse normal stuff', () => {
@@ -90,8 +90,8 @@ test('spoilers are handled correctly', () => {
 		.toBe('a <span class="d-spoiler">spoiler</span> may have <span class="d-spoiler">multiple<br>lines</span>');
 	expect(markdown.toHTML('||strange||markdown||'))
 		.toBe('<span class="d-spoiler">strange</span>markdown||');
-	expect(markdown.toHTML('||<i>itallics</i>||'))
-		.toBe('<span class="d-spoiler">&lt;i&gt;itallics&lt;/i&gt;</span>');
+	expect(markdown.toHTML('||<i>italics</i>||'))
+		.toBe('<span class="d-spoiler">&lt;i&gt;italics&lt;/i&gt;</span>');
 	expect(markdown.toHTML('||```\ncode\nblock\n```||'))
 		.toBe('<span class="d-spoiler"><pre><code class="hljs">code\nblock</code></pre></span>');
 });

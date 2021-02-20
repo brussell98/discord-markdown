@@ -1,3 +1,15 @@
+# [2.4.2](https://github.com/brussell98/discord-markdown/compare/v2.4.1...v2.4.2) (2021-02-19)
+
+### Improvements
+
+- Changed code to use the `markdown.outFor(rule, key)` API
+- Upgraded `highlight.js` from 10.1.2 to 10.6.0
+- Updated `simple-markdown` from 0.7.2 to 0.7.3
+
+### Fixes
+
+- Fixed animated emoji URLs
+
 # [2.4.1](https://github.com/brussell98/discord-markdown/compare/v2.4.0...v2.4.1) (2020-09-23)
 
 ### Fixes
