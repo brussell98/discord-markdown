@@ -9,6 +9,7 @@
 		"md"
 	],
 	"main": "index.js",
+	"types": "index.d.ts",
 	"repository": "https://github.com/brussell98/discord-markdown.git",
 	"author": "Brussell (https://brussell.me)",
 	"contributors": [
