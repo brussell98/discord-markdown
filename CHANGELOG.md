@@ -1,3 +1,9 @@
+# [2.5.0](https://github.com/brussell98/discord-markdown/compare/v2.4.2...v2.5.0) (2021-06-03)
+
+### Features
+
+- Added typings
+
 # [2.4.2](https://github.com/brussell98/discord-markdown/compare/v2.4.1...v2.4.2) (2021-02-19)
 
 ### Improvements
