@@ -1,9 +1,9 @@
 import * as markdown from 'simple-markdown';
 
 interface DiscordCallback {
-  user?: (id: number) => string;
-  channel?: (id: number) => string;
-  role?: (id: number) => string;
+  user?: (node: { id: string }) => string;
+  channel?: (node: { id: string }) => string;
+  role?: (node: { id: string }) => string;
   everyone?: () => string;
   here?: () => string;
 }
