@@ -12,8 +12,8 @@ interface HTMLOptions {
   embed?: boolean;
   escapeHTML?: boolean;
   discordOnly?: boolean;
-  discordCallback: DiscordCallback;
-  cssModuleNames: Record<string, string>;
+  discordCallback?: DiscordCallback;
+  cssModuleNames?: Record<string, string>;
 }
 
 export function parser(source: string): markdown.SingleASTNode[]
