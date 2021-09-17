@@ -1,3 +1,9 @@
+# [2.5.1](https://github.com/brussell98/discord-markdown/compare/v2.5.0...v2.5.1) (2021-09-17)
+
+### Fixes
+
+- Fixed typings
+
 # [2.5.0](https://github.com/brussell98/discord-markdown/compare/v2.4.2...v2.5.0) (2021-06-03)
 
 ### Features
