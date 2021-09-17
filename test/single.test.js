@@ -55,7 +55,7 @@ test('Fence normal code blocks', () => {
 
 test('Fenced code blocks with hljs', () => {
 	expect(markdown.toHTML('```js\nconst one = 1;\nconsole.log(one);\n```'))
-		.toBe('<pre><code class="hljs js"><span class="hljs-keyword">const</span> one = <span class="hljs-number">1</span>;\n<span class="hljs-built_in">console</span>.log(one);</code></pre>');
+		.toBe('<pre><code class="hljs js"><span class="hljs-keyword">const</span> one = <span class="hljs-number">1</span>;\n<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(one);</code></pre>');
 });
 
 test('Fenced code blocks on one line', () => {

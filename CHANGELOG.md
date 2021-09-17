@@ -1,5 +1,9 @@
 # [2.5.1](https://github.com/brussell98/discord-markdown/compare/v2.5.0...v2.5.1) (2021-09-17)
 
+### Improvements
+
+- Updated `highlight.js` to v11
+
 ### Fixes
 
 - Fixed typings
