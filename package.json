@@ -1,7 +1,7 @@
 {
 	"name": "discord-markdown-fix",
 	"version": "2.5.5",
-	"description": "A markdown parser for Discord messages",
+	"description": "✨A markdown parser with the same rules as Discord",
 	"keywords": [
 		"discord",
 		"markdown",
@@ -11,7 +11,7 @@
 	"main": "index.js",
 	"types": "index.d.ts",
 	"type": "module",
-	"repository": "https://github.com/srgobi/discord-markdown.git",
+	"repository": "https://github.com/srgobi/discord-markdown-fix.git",
 	"author": "SrGobi",
 	"contributors": [
 		"Iron7III"
