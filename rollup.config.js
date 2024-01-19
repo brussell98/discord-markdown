@@ -1,7 +1,7 @@
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-import replace from 'rollup-plugin-replace';
-import { terser } from 'rollup-plugin-terser';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import replace from '@rollup/plugin-replace';
+import { terser } from '@chiogen/rollup-plugin-terser';
 
 export default {
 	input: 'index.js',
@@ -12,9 +12,10 @@ export default {
 		exports: 'named'
 	},
 	plugins: [
-		resolve(),
+		nodeResolve(),
 		commonjs(),
 		replace({
+			preventAssignment: true,
 			'process.env.NODE_ENV': JSON.stringify('production')
 		}),
 		terser()
