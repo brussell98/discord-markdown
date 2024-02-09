@@ -10,7 +10,6 @@
 	],
 	"main": "index.js",
 	"types": "index.d.ts",
-	"type": "module",
 	"repository": "https://github.com/srgobi/discord-markdown-fix.git",
 	"author": "SrGobi",
 	"contributors": [
@@ -21,7 +20,7 @@
 	"scripts": {
 		"test": "jest --verbose",
 		"lint": "eslint .",
-		"rollup": "rollup -c"
+		"dist": "rollup -c"
 	},
 	"dependencies": {
 		"highlight.js": "^11.2.0",

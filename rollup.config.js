@@ -7,7 +7,7 @@ export default {
 	input: 'index.js',
 	output: {
 		format: 'iife',
-		file: 'dist/discord-markdown-fix.min.js',
+		file: 'dist/discord-markdown.min.js',
 		name: 'discordMarkdown',
 		exports: 'named'
 	},
