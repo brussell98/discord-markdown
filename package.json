@@ -24,7 +24,7 @@
 		"rollup": "rollup -c"
 	},
 	"dependencies": {
-		"highlight.js": "^11.9.0",
+		"highlight.js": "^11.2.0",
 		"simple-markdown": "^0.7.3"
 	},
 	"devDependencies": {
