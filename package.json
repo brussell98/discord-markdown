@@ -1,7 +1,7 @@
 {
-	"name": "discord-markdown",
-	"version": "2.5.1",
-	"description": "A markdown parser for Discord messages",
+	"name": "discord-markdown-fix",
+	"version": "2.5.6",
+	"description": "✨A markdown parser with the same rules as Discord",
 	"keywords": [
 		"discord",
 		"markdown",
@@ -10,30 +10,29 @@
 	],
 	"main": "index.js",
 	"types": "index.d.ts",
-	"repository": "https://github.com/brussell98/discord-markdown.git",
-	"author": "Brussell (https://brussell.me)",
+	"repository": "https://github.com/srgobi/discord-markdown-fix.git",
+	"author": "SrGobi",
 	"contributors": [
-		"Sorunome"
+		"Iron7III"
 	],
 	"license": "MIT",
 	"private": false,
 	"scripts": {
 		"test": "jest --verbose",
 		"lint": "eslint .",
-		"dist": "rollup -c",
-		"prepublishOnly": "npm run dist"
+		"rollup": "rollup -c"
 	},
 	"dependencies": {
-		"highlight.js": "^11.2.0",
+		"highlight.js": "^11.9.0",
 		"simple-markdown": "^0.7.3"
 	},
 	"devDependencies": {
-		"eslint": "^7.32.0",
-		"jest": "^25.1.0",
-		"rollup": "^1.32.1",
-		"rollup-plugin-commonjs": "^10.1.0",
-		"rollup-plugin-node-resolve": "^5.2.0",
-		"rollup-plugin-replace": "^2.2.0",
-		"rollup-plugin-terser": "^5.3.0"
+		"@rollup/plugin-terser": "^0.4.4",
+		"@rollup/plugin-commonjs": "^25.0.7",
+		"@rollup/plugin-node-resolve": "^15.2.3",
+		"@rollup/plugin-replace": "^5.0.5",
+		"eslint": "^8.56.0",
+		"jest": "^29.7.0",
+		"rollup": "^4.9.6"
 	}
 }

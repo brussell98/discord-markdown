@@ -41,11 +41,11 @@ test('Converts ~~ text ~~ to <del>', () => {
 });
 
 test('Converts links to <a> links', () => {
-	expect(markdown.toHTML('https://brussell.me'))
-		.toBe('<a href="https://brussell.me">https://brussell.me</a>');
+	expect(markdown.toHTML('https://srgobi.com'))
+		.toBe('<a href="https://srgobi.com">https://srgobi.com</a>');
 
-	expect(markdown.toHTML('<https://brussell.me>'))
-		.toBe('<a href="https://brussell.me">https://brussell.me</a>');
+	expect(markdown.toHTML('<https://srgobi.com>'))
+		.toBe('<a href="https://srgobi.com">https://srgobi.com</a>');
 });
 
 test('Fence normal code blocks', () => {
