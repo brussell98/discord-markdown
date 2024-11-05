@@ -1,17 +1,20 @@
-# discord-markdown
+# discord-markdown-fix
 A markdown parser for Discord messages.
+
+<p align="center"><a href="https://nodei.co/npm/discord-markdown-fix/"><img src="https://nodei.co/npm/discord-markdown-fix.png"></a></p>
+<p align="center"><img src="https://img.shields.io/npm/v/discord-markdown-fix?style=for-the-badge"> <img src="https://img.shields.io/npm/l/hercai?style=for-the-badge"> <img src="https://img.shields.io/npm/dt/discord-markdown-fix?style=for-the-badge"> <a href="https://discord.gg/cqrN3Eg" target="_blank"> <img alt="Discord" src="https://img.shields.io/badge/Support-Click%20here-7289d9?style=for-the-badge&logo=discord"> </a> </p>
 
 ## Using
 
 ```bash
-yarn add discord-markdown
-npm i discord-markdown
+yarn add discord-markdown-fix
+npm i discord-markdown-fix
 ```
 
 For browser use, import `dist/discord-markdown.min.js`
 
 ```js
-const { parser, htmlOutput, toHTML } = require('discord-markdown');
+const { parser, htmlOutput, toHTML } = require('discord-markdown-fix');
 
 console.log(toHTML('This **is** a __test__'));
 // => This <strong>is</strong> a <u>test</u>
@@ -22,7 +25,7 @@ Fenced codeblocks will include highlight.js tags and classes.
 ## Options
 
 ```js
-const { toHTML } = require('discord-markdown');
+const { toHTML } = require('discord-markdown-fix');
 toHTML('This **is** a __test__', options);
 ```
 
@@ -46,17 +49,17 @@ Using the `discordCallback` option you can define custom functions to handle par
 Example:
 
 ```js
-const { toHTML } = require('discord-markdown');
+const { toHTML } = require('discord-markdown-fix');
 toHTML('This is a mention for <@95286900801146880>', {
 	discordCallback: {
 		user: node => '@' + users[node.id];
 	}
-}); // -> This is a mention for @Brussell
+}); // -> This is a mention for @SrGobi
 ```
 
 ## Customizing
 
-It is possible to change the rules used by discord-markdown. Take a look at the code to see how to create your own modified rule set.
+It is possible to change the rules used by discord-markdown-fix. Take a look at the code to see how to create your own modified rule set.
 
 ## Contributing
 

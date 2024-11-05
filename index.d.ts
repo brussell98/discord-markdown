@@ -18,7 +18,7 @@ interface HTMLOptions {
 
 export function parser(source: string): markdown.SingleASTNode[]
 export function htmlOutput(node: markdown.ASTNode, state?: markdown.OptionalState): unknown;
-export function toHTML(source: string, options?: HTMLOptions, customParser?: markdown.Parser, customOutput?: markdown.Output): string;
+export function toHTML(source: string, options?: HTMLOptions, customParser?: markdown.Parser, customOutput?: markdown.Output<string>): string;
 export function htmlTag(tagName: string, content: string, attributes: Record<string, string>, isClosed?: boolean, state?: markdown.State): string
 
 type MarkdownRules = Record<string, Record<string, unknown>>;

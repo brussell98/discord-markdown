@@ -1,14 +1,14 @@
 const markdown = require('simple-markdown');
 const highlight = require('highlight.js');
 
-function htmlTag(tagName, content, attributes, isClosed = true, state = { }) {
+function htmlTag(tagName, content, attributes, isClosed = true, state = {}) {
 	if (typeof isClosed === 'object') {
 		state = isClosed;
 		isClosed = true;
 	}
 
 	if (!attributes)
-		attributes = { };
+		attributes = {};
 
 	if (attributes.class && state.cssModuleNames)
 		attributes.class = attributes.class.split(' ').map(cl => state.cssModuleNames[cl] || cl).join(' ');
@@ -29,25 +29,25 @@ function htmlTag(tagName, content, attributes, isClosed = true, state = { }) {
 markdown.htmlTag = htmlTag;
 
 const rules = {
-	blockQuote: Object.assign({ }, markdown.defaultRules.blockQuote, {
-		match: function(source, state, prevSource) {
+	blockQuote: Object.assign({}, markdown.defaultRules.blockQuote, {
+		match: function (source, state, prevSource) {
 			return !/^$|\n *$/.test(prevSource) || state.inQuote ? null : /^( *>>> ([\s\S]*))|^( *> [^\n]*(\n *> [^\n]*)*\n?)/.exec(source);
 		},
-		parse: function(capture, parse, state) {
+		parse: function (capture, parse, state) {
 			const all = capture[0];
 			const isBlock = Boolean(/^ *>>> ?/.exec(all));
 			const removeSyntaxRegex = isBlock ? /^ *>>> ?/ : /^ *> ?/gm;
 			const content = all.replace(removeSyntaxRegex, '');
 
 			return {
-				content: parse(content, Object.assign({ }, state, { inQuote: true })),
+				content: parse(content, Object.assign({}, state, { inQuote: true })),
 				type: 'blockQuote'
 			}
 		}
 	}),
-	codeBlock: Object.assign({ }, markdown.defaultRules.codeBlock, {
+	codeBlock: Object.assign({}, markdown.defaultRules.codeBlock, {
 		match: markdown.inlineRegex(/^```(([a-z0-9-]+?)\n+)?\n*([^]+?)\n*```/i),
-		parse: function(capture, parse, state) {
+		parse: function (capture, parse, state) {
 			return {
 				lang: (capture[2] || '').trim(),
 				content: capture[3] || '',
@@ -70,7 +70,7 @@ const rules = {
 	}),
 	newline: markdown.defaultRules.newline,
 	escape: markdown.defaultRules.escape,
-	autolink: Object.assign({ }, markdown.defaultRules.autolink, {
+	autolink: Object.assign({}, markdown.defaultRules.autolink, {
 		parse: capture => {
 			return {
 				content: [{
@@ -84,7 +84,7 @@ const rules = {
 			return htmlTag('a', output(node.content, state), { href: markdown.sanitizeUrl(node.target) }, state);
 		}
 	}),
-	url: Object.assign({ }, markdown.defaultRules.url, {
+	url: Object.assign({}, markdown.defaultRules.url, {
 		parse: capture => {
 			return {
 				content: [{
@@ -98,26 +98,26 @@ const rules = {
 			return htmlTag('a', output(node.content, state), { href: markdown.sanitizeUrl(node.target) }, state);
 		}
 	}),
-	em: Object.assign({ }, markdown.defaultRules.em, {
-		parse: function(capture, parse, state) {
-			const parsed = markdown.defaultRules.em.parse(capture, parse, Object.assign({ }, state, { inEmphasis: true }));
+	em: Object.assign({}, markdown.defaultRules.em, {
+		parse: function (capture, parse, state) {
+			const parsed = markdown.defaultRules.em.parse(capture, parse, Object.assign({}, state, { inEmphasis: true }));
 			return state.inEmphasis ? parsed.content : parsed;
 		},
 	}),
 	strong: markdown.defaultRules.strong,
 	u: markdown.defaultRules.u,
-	strike: Object.assign({ }, markdown.defaultRules.del, {
+	strike: Object.assign({}, markdown.defaultRules.del, {
 		match: markdown.inlineRegex(/^~~([\s\S]+?)~~(?!_)/),
 	}),
-	inlineCode: Object.assign({ }, markdown.defaultRules.inlineCode, {
+	inlineCode: Object.assign({}, markdown.defaultRules.inlineCode, {
 		match: source => markdown.defaultRules.inlineCode.match.regex.exec(source),
-		html: function(node, output, state) {
+		html: function (node, output, state) {
 			return htmlTag('code', markdown.sanitizeText(node.content.trim()), null, state);
 		}
 	}),
-	text: Object.assign({ }, markdown.defaultRules.text, {
+	text: Object.assign({}, markdown.defaultRules.text, {
 		match: source => /^[\s\S]+?(?=[^0-9A-Za-z\s\u00c0-\uffff-]|\n\n|\n|\w+:\S|$)/.exec(source),
-		html: function(node, output, state) {
+		html: function (node, output, state) {
 			if (state.escapeHTML)
 				return markdown.sanitizeText(node.content);
 
@@ -127,28 +127,28 @@ const rules = {
 	emoticon: {
 		order: markdown.defaultRules.text.order,
 		match: source => /^(¯\\_\(ツ\)_\/¯)/.exec(source),
-		parse: function(capture) {
+		parse: function (capture) {
 			return {
 				type: 'text',
 				content: capture[1]
 			};
 		},
-		html: function(node, output, state) {
+		html: function (node, output, state) {
 			return output(node.content, state);
 		},
 	},
-	br: Object.assign({ }, markdown.defaultRules.br, {
+	br: Object.assign({}, markdown.defaultRules.br, {
 		match: markdown.anyScopeRegex(/^\n/),
 	}),
 	spoiler: {
 		order: 0,
 		match: source => /^\|\|([\s\S]+?)\|\|/.exec(source),
-		parse: function(capture, parse, state) {
+		parse: function (capture, parse, state) {
 			return {
 				content: parse(capture[1], state)
 			};
 		},
-		html: function(node, output, state) {
+		html: function (node, output, state) {
 			return htmlTag('span', output(node.content, state), { class: 'd-spoiler' }, state);
 		}
 	}
@@ -166,50 +166,50 @@ const rulesDiscord = {
 	discordUser: {
 		order: markdown.defaultRules.strong.order,
 		match: source => /^<@!?([0-9]*)>/.exec(source),
-		parse: function(capture) {
+		parse: function (capture) {
 			return {
 				id: capture[1]
 			};
 		},
-		html: function(node, output, state) {
+		html: function (node, output, state) {
 			return htmlTag('span', state.discordCallback.user(node), { class: 'd-mention d-user' }, state);
 		}
 	},
 	discordChannel: {
 		order: markdown.defaultRules.strong.order,
 		match: source => /^<#?([0-9]*)>/.exec(source),
-		parse: function(capture) {
+		parse: function (capture) {
 			return {
 				id: capture[1]
 			};
 		},
-		html: function(node, output, state) {
+		html: function (node, output, state) {
 			return htmlTag('span', state.discordCallback.channel(node), { class: 'd-mention d-channel' }, state);
 		}
 	},
 	discordRole: {
 		order: markdown.defaultRules.strong.order,
 		match: source => /^<@&([0-9]*)>/.exec(source),
-		parse: function(capture) {
+		parse: function (capture) {
 			return {
 				id: capture[1]
 			};
 		},
-		html: function(node, output, state) {
+		html: function (node, output, state) {
 			return htmlTag('span', state.discordCallback.role(node), { class: 'd-mention d-role' }, state);
 		}
 	},
 	discordEmoji: {
 		order: markdown.defaultRules.strong.order,
 		match: source => /^<(a?):(\w+):(\d+)>/.exec(source),
-		parse: function(capture) {
+		parse: function (capture) {
 			return {
 				animated: capture[1] === 'a',
 				name: capture[2],
 				id: capture[3],
 			};
 		},
-		html: function(node, output, state) {
+		html: function (node, output, state) {
 			return htmlTag('img', '', {
 				class: `d-emoji${node.animated ? ' d-emoji-animated' : ''}`,
 				src: `https://cdn.discordapp.com/emojis/${node.id}.${node.animated ? 'gif' : 'png'}`,
@@ -220,20 +220,20 @@ const rulesDiscord = {
 	discordEveryone: {
 		order: markdown.defaultRules.strong.order,
 		match: source => /^@everyone/.exec(source),
-		parse: function() {
-			return { };
+		parse: function () {
+			return {};
 		},
-		html: function(node, output, state) {
+		html: function (node, output, state) {
 			return htmlTag('span', state.discordCallback.everyone(node), { class: 'd-mention d-user' }, state);
 		}
 	},
 	discordHere: {
 		order: markdown.defaultRules.strong.order,
 		match: source => /^@here/.exec(source),
-		parse: function() {
-			return { };
+		parse: function () {
+			return {};
 		},
-		html: function(node, output, state) {
+		html: function (node, output, state) {
 			return htmlTag('span', state.discordCallback.here(node), { class: 'd-mention d-user' }, state);
 		}
 	}
@@ -241,10 +241,10 @@ const rulesDiscord = {
 
 Object.assign(rules, rulesDiscord);
 
-const rulesDiscordOnly = Object.assign({ }, rulesDiscord, {
-	text: Object.assign({ }, markdown.defaultRules.text, {
+const rulesDiscordOnly = Object.assign({}, rulesDiscord, {
+	text: Object.assign({}, markdown.defaultRules.text, {
 		match: source => /^[\s\S]+?(?=[^0-9A-Za-z\s\u00c0-\uffff-]|\n\n|\n|\w+:\S|$)/.exec(source),
-		html: function(node, output, state) {
+		html: function (node, output, state) {
 			if (state.escapeHTML)
 				return markdown.sanitizeText(node.content);
 
@@ -253,7 +253,7 @@ const rulesDiscordOnly = Object.assign({ }, rulesDiscord, {
 	})
 });
 
-const rulesEmbed = Object.assign({ }, rules, {
+const rulesEmbed = Object.assign({}, rules, {
 	link: markdown.defaultRules.link
 });
 
@@ -282,8 +282,8 @@ function toHTML(source, options, customParser, customHtmlOutput) {
 		embed: false,
 		escapeHTML: true,
 		discordOnly: false,
-		discordCallback: { }
-	}, options || { });
+		discordCallback: {}
+	}, options || {});
 
 	let _parser = parser;
 	let _htmlOutput = htmlOutput;
@@ -304,7 +304,7 @@ function toHTML(source, options, customParser, customHtmlOutput) {
 		inEmphasis: false,
 		escapeHTML: options.escapeHTML,
 		cssModuleNames: options.cssModuleNames || null,
-		discordCallback: Object.assign({ }, discordCallbackDefaults, options.discordCallback)
+		discordCallback: Object.assign({}, discordCallbackDefaults, options.discordCallback)
 	};
 
 	return _htmlOutput(_parser(source, state), state);
